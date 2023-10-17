@@ -13,11 +13,11 @@ namespace Assets
         private int numberOfDailyFlights;
         public static int numberOfFLightsOnSchedule = 0;
 
-        public FlightSchedule(int numberOfDailyFlights)
+        public FlightSchedule(int numberOfDailyFlights, DateTime date)
         {
             this.flights = new Flight[numberOfDailyFlights];
             this.numberOfDailyFlights = numberOfDailyFlights;
-            this.date = DateTime.Now;
+            this.date = date;
         }
 
         public bool AddFLight(Flight flight) 

@@ -91,9 +91,12 @@ public class DataBaseManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Get all 
+    /// Get all the elements of a list matching the id
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="elementID"></param>
+    /// <param name="itemSelected"></param>
+    /// <param name="tableName"></param>
+    /// <param name="conditionID"></param>
     /// <returns></returns>
     public List<int> GetListOfElemntsFromTableMatchingCondition(int elementID, string itemSelected, string tableName, string conditionID )
     {
@@ -111,9 +114,6 @@ public class DataBaseManager : MonoBehaviour
 
         //dbCommandReadValues.CommandText = "SELECT AirportID FROM AirlinesToAirportsManager WHERE AirlineID =" + elementID + ";";
 
-        //print("data reader " +dataReader);
-        //print(dataReader.Read());
-
         if (!(dataReader is null))
         {
             while (dataReader.Read())
@@ -128,7 +128,7 @@ public class DataBaseManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Add all the existing airporots to a list as to not add them again and make duplicates.
+    /// Add all the existing airports to a list as to not add them again and make duplicates.
     /// </summary>
     public void AddAirportCodeToList_InfoDb()
     {
@@ -227,7 +227,12 @@ public class DataBaseManager : MonoBehaviour
 
         //Create a table for the many to many relationship between Airline Table and Airport Table in the database if it does not exist yet
         dbCommandCreateTable = dbConnection.CreateCommand();
-        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS PlanesTable (AirlineID INTEGER, AirportID INTEGER)";
+        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS AirlinesToAirportsManager (AirlineID INTEGER, AirportID INTEGER)";
+        dbCommandCreateTable.ExecuteReader();
+
+        //Create a table for the many to many relationship between Airline Table and Planes Table in the database if it does not exist yet
+        dbCommandCreateTable = dbConnection.CreateCommand();
+        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS AirlinesToPlanesManager (AirlineID INTEGER, PlaneID INTEGER, Quantity INTEGER)";
         dbCommandCreateTable.ExecuteReader();
 
         //Create a table for the Planes Table count in the database if it does not exist yet
