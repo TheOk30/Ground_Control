@@ -7,22 +7,27 @@ using Unity.VisualScripting;
 
 namespace Assets
 {
-
-    class Airport : Location
+    public class Airport : Location
     {
         private readonly int airportID;
         private readonly string airportName;
-        private readonly string Country;
-        private readonly string City;
-        public static int numberOfAirpots;
+        private readonly string country;
+        private readonly string city;
 
-        public Airport(int airportID, string airportName, string Country, string City, double latitude, double longitude, int numberOfAirpotsParm) :base(latitude, longitude)
+        public Airport(int airportID, string airportName, string country, string city, double latitude, double longitude) :base(latitude, longitude)
         {
             this.airportID = airportID;
             this.airportName = airportName;
-            this.Country = Country;
-            this.City = City;
-            numberOfAirpots = numberOfAirpotsParm;
+            this.country = country;
+            this.city = city;
+        }
+
+        public Airport(Airport airport) :base(airport.GetLatitude(), airport.GetLongitude())
+        {
+            this.airportID = airport.GetAirportID();
+            this.airportName = airport.GetAirportName();
+            this.city = airport.GetCountry();
+            this.city = airport.GetCity();
         }
 
         public int GetAirportID()
@@ -37,12 +42,12 @@ namespace Assets
 
         public string GetCountry() 
         {
-            return this.Country;
+            return this.country;
         }
 
         public string GetCity()
         {
-            return this.City;
+            return this.city;
         }
 
         public int DistanceFromCurrentAirport(Location local)
@@ -53,11 +58,6 @@ namespace Assets
         public static int DistanceBetweenAirports(Airport airport1, Airport airport2)
         {
             return (int)DistanceAndLocationsFunctions.DistanceBetweenCoordinates(airport1.GetLatitude(), airport1.GetLongitude(), airport2.GetLatitude(), airport2.GetLongitude());
-        }
-
-        public static int GetNumberOfAirpots()
-        {
-            return numberOfAirpots;
         }
     }
 }

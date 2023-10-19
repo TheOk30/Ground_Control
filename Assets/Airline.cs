@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditorInternal;
+using UnityEditor;
 
 namespace Assets
 {
@@ -14,11 +15,12 @@ namespace Assets
         private readonly string airlinename;
         private readonly string airlineCode;
         private List<int> flightNumbers;
-        private Plane[] planes;
-        private Airport[] airportsFlyingTo;
-        public static int NumberOfAirlines;
+        private List<Plane> planes;
+        private List<int> airportsFlyingTo;
+        private int homeAirport;
+        public static int[] planesCounter;
 
-        public Airline(int airlineID, string airlinename, string airlineCode, Plane[] planes, Airport[] airportsFlyingTo, int numberofAirlines)
+        public Airline(int airlineID, string airlinename, string airlineCode, List<Plane> planes, List<int> airportsFlyingTo, int homeAirport)
         {
             this.airlineID = airlineID;
             this.airlinename = airlinename;
@@ -26,26 +28,26 @@ namespace Assets
             this.planes = planes;
             this.airportsFlyingTo = airportsFlyingTo;
             this.flightNumbers = new List<int>();
-            NumberOfAirlines = numberofAirlines;
+            this.homeAirport = homeAirport;
         }
 
-        public int GetAirlineID() 
-        {  
-            return airlineID; 
-        }   
+        public int GetAirlineID()
+        {
+            return airlineID;
+        }
 
         public string GetAirlineName()
         {
             return this.airlinename;
         }
-        
+
         public string GetAirlineCode()
         {
             return this.airlineCode;
         }
-        
+
         public List<int> GetFlightNumbers()
-        { 
+        {
             return this.flightNumbers;
         }
 
@@ -54,14 +56,14 @@ namespace Assets
             this.flightNumbers.Add(nums);
         }
 
-        public Plane[] GetPlanes()
+        public List<Plane> GetPlanes()
         {
             return this.planes;
         }
-        
-        public static int GetNumberofAirlines()
+
+        public List<Airport> GetAirportsFlyingTo()
         {
-            return NumberOfAirlines;
+            return this.airportsFlyingTo;
         }
     }
 }

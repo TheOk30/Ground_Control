@@ -9,7 +9,8 @@ namespace Assets
 {
     class Plane
     {
-        private readonly int planeID;
+        private readonly string realPlaneID;
+        private readonly int DBplaneID;
         private readonly string planeName;
         private readonly int fuelCapacity;
         private readonly int fuelDropRate;
@@ -21,11 +22,11 @@ namespace Assets
         private int currentSpeed;
         private int distanceTraveled;
         public static int AlldistanceTraveled = 0;
-        public static int numberOfPlanes =0;
 
-        public Plane(int planeID, string planeName, int fuelCapacity, Airline airline, int avrSpeed, int maxSpeed, int fuelDropRate, int distanceTraveled, int numberOfPlanesParm)
+        public Plane(int DBplaneID, string planeName, int fuelCapacity, Airline airline, int avrSpeed, int maxSpeed, int fuelDropRate)
         {
-            this.planeID = planeID;
+            this.DBplaneID = DBplaneID;
+            this.realPlaneID = createPlaneID();
             this.planeName = planeName;
             this.fuelCapacity = fuelCapacity;
             this.currentFuelLevel = fuelCapacity;
@@ -34,9 +35,13 @@ namespace Assets
             this.avrSpeed = avrSpeed;
             this.maxSpeed = maxSpeed;
             this.currentSpeed = 0;
-            this.distanceTraveled = distanceTraveled;
+            this.distanceTraveled = 0;
             this.flight = null;
-            numberOfPlanes = numberOfPlanesParm;
+        }
+
+        private string createPlaneID()
+        {
+
         }
 
         public int GetAvrSpeed( )
