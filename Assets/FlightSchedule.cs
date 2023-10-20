@@ -44,8 +44,23 @@ namespace Assets
             List<int> AirlinedFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirportId);
 
             int rndAirlineIndex = rnd.Next(0, AirlinedFlyingToCurrentAirport.Count);
-            Airline airline = DataBaseManager.Instance
-            Airport otherAirport = DataBaseManager.Instance.GetAllAirportInfo(rnd.Next();
+            Airline airline = DataBaseManager.Instance.GetAllAirlineInfo(this.MainAirportId);
+
+            int otherAirportID;
+            if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirportId)
+            {
+                 otherAirportID = airline.GetHomeAirport();
+            }
+
+            else
+            {
+                otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirportId);
+            }
+           
+           
+            Airport otherAirport = DataBaseManager.Instance.GetAllAirportInfo(otherAirportID);
+
+
             return new Flight();
         }
 

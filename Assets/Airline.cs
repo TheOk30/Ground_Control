@@ -9,26 +9,27 @@ using UnityEditor;
 
 namespace Assets
 {
-    class Airline
+    public class Airline
     {
         private readonly int airlineID;
-        private readonly string airlinename;
+        private readonly string airlineName;
         private readonly string airlineCode;
         private List<int> flightNumbers;
-        private List<Plane> planes;
-        private List<int> airportsFlyingTo;
+        private List<PlaneQuantityManager> allPlanesList;
+        private List<Plane> PlanesCreated;
         private int homeAirport;
-        public static int[] planesCounter;
+        //private int[] planesCounter;
 
-        public Airline(int airlineID, string airlinename, string airlineCode, List<Plane> planes, List<int> airportsFlyingTo, int homeAirport)
+        public Airline(int airlineID, string airlineName, string airlineCode, List<PlaneQuantityManager> allPlanesList, int homeAirport)
         {
             this.airlineID = airlineID;
-            this.airlinename = airlinename;
+            this.airlineName = airlineName;
             this.airlineCode = airlineCode;
-            this.planes = planes;
-            this.airportsFlyingTo = airportsFlyingTo;
+            this.allPlanesList = allPlanesList;
+            this.PlanesCreated = new List<Plane>();
             this.flightNumbers = new List<int>();
             this.homeAirport = homeAirport;
+            //this.planesCounter = new int[DataBaseManager.Instance.GetTheLastIdFromTable("PlanesTable")];
         }
 
         public int GetAirlineID()
@@ -38,7 +39,7 @@ namespace Assets
 
         public string GetAirlineName()
         {
-            return this.airlinename;
+            return this.airlineName;
         }
 
         public string GetAirlineCode()
@@ -56,14 +57,28 @@ namespace Assets
             this.flightNumbers.Add(nums);
         }
 
-        public List<Plane> GetPlanes()
+        public int GetHomeAirport()
         {
-            return this.planes;
+            return this.homeAirport;
         }
 
-        public List<Airport> GetAirportsFlyingTo()
-        {
-            return this.airportsFlyingTo;
-        }
+        //public void BindPlanesToAirline()
+        //{
+        //    foreach (Plane plane in this.planes)
+        //    {
+        //        plane.BindAirlineToCurrentPlane(this, this.planesCounter[plane.GetPlaneID()]++);
+        //    }
+
+        //}
+
+        //public List<Plane> GetPlanes()
+        //{
+        //    return this.planes;
+        //}
+
+        //public List<int> GetAirportsFlyingTo()
+        //{
+        //    return this.airportsFlyingTo;
+        //}
     }
 }

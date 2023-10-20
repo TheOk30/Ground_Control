@@ -386,6 +386,7 @@
 "Assets/Location.cs"
 "Assets/NewBehaviourScript.cs"
 "Assets/Plane.cs"
+"Assets/PlaneQuantityManager.cs"
 -langversion:9.0
 
 /deterministic

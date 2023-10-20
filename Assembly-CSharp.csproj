@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Assets\BackgroundStretchHandler.cs" />
     <Compile Include="Assets\Plane.cs" />
+    <Compile Include="Assets\PlaneQuantityManager.cs" />
     <Compile Include="Assets\AirportManager.cs" />
     <Compile Include="Assets\NewBehaviourScript.cs" />
     <Compile Include="Assets\Flight.cs" />

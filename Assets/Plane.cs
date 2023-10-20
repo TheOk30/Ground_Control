@@ -9,7 +9,7 @@ namespace Assets
 {
     class Plane
     {
-        private readonly string realPlaneID;
+        private string realPlaneID;
         private readonly int DBplaneID;
         private readonly string planeName;
         private readonly int fuelCapacity;
@@ -20,31 +20,46 @@ namespace Assets
         private int avrSpeed;
         private int maxSpeed;
         private int currentSpeed;
+        private int maxRange;
         private int distanceTraveled;
         public static int AlldistanceTraveled = 0;
 
-        public Plane(int DBplaneID, string planeName, int fuelCapacity, Airline airline, int avrSpeed, int maxSpeed, int fuelDropRate)
+        private Plane(int DBplaneID, string planeName, int fuelCapacity, int avrSpeed, int maxSpeed, int fuelDropRate, int maxRange)
         {
             this.DBplaneID = DBplaneID;
-            this.realPlaneID = createPlaneID();
+            this.realPlaneID = "";
             this.planeName = planeName;
             this.fuelCapacity = fuelCapacity;
             this.currentFuelLevel = fuelCapacity;
             this.fuelDropRate = fuelDropRate;
-            this.airline = airline;
+            this.airline = null;
             this.avrSpeed = avrSpeed;
             this.maxSpeed = maxSpeed;
             this.currentSpeed = 0;
             this.distanceTraveled = 0;
             this.flight = null;
+            this.maxRange = maxRange;
         }
 
-        private string createPlaneID()
+        private string CreatePlaneID(int index)
         {
-
+            return this.DBplaneID.ToString() + this.airline.GetAirlineCode().ToString() + '_' + index.ToString();
+        }
+        
+        public void BindAirlineToCurrentPlane(Airline airline, int index)
+        {
+            if (this.airline == null)
+            {
+                this.airline = airline;
+                this.realPlaneID = CreatePlaneID(index);
+            }
+        }
+        public int GetPlaneID()
+        {
+            return this.DBplaneID;
         }
 
-        public int GetAvrSpeed( )
+        public int GetAvrSpeed()
         {
             return this.avrSpeed;
         }

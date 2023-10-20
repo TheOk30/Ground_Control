@@ -14,11 +14,6 @@ public class DataBaseManager : MonoBehaviour
 {
     public static DataBaseManager Instance;
 
-    private void Start()
-    {
-
-    }
-
     /// <summary>
     /// Manage and remember variables in between scenes.
     /// If there are two instances of this script in a scene, 
@@ -60,7 +55,6 @@ public class DataBaseManager : MonoBehaviour
 
         dbCommandInsertValues.CommandText = "INSERT INTO AirportsTable (ID, Name, Latitude, Longitude, Country, AirportCode) VALUES(" + idForDB + nameForDB +  latForDB + lonForDB + countryForDB + codeForDB + ");";
         dbCommandInsertValues.ExecuteNonQuery();
-
         dbConnection.Close();
     }
 
@@ -73,7 +67,7 @@ public class DataBaseManager : MonoBehaviour
     /// <param name="list"></param>
     /// <param name="id"></param>
     /// <param name="tableName"></param>
-    /// <param name="otherElementID"></param>
+    /// <param name="otherElementName"></param>
     public void InsertItemWithConnectionToAirline(List<int> list, int id, string tableName, string mainElementName, string otherElementName)
     {
         IDbConnection dbConnection = CreateAndOpenDatabase();
@@ -113,11 +107,8 @@ public class DataBaseManager : MonoBehaviour
         string tableNameForDB = '"' + tableName + '"';
         string conditionIDForDB = '"' + conditionID + '"';
 
-
         dbCommandReadValues.CommandText = "SELECT" + itemSelectedForDB + "FROM" + tableNameForDB + "WHERE" + conditionIDForDB + "=" + elementIDForDB + ";";
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-
-        //dbCommandReadValues.CommandText = "SELECT AirportID FROM AirlinesToAirportsManager WHERE AirlineID =" + elementID + ";";
 
         if (!(dataReader is null))
         {
@@ -222,7 +213,6 @@ public class DataBaseManager : MonoBehaviour
         dbCommandReadValues.CommandText = "SELECT Name, Latitude, Longitude, City, Country FROM AirportsTable WHERE ID =" + idForDB + ';';
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();
 
-
         while (dataReader.Read())
         {
             name = dataReader.GetString(0);
@@ -242,51 +232,76 @@ public class DataBaseManager : MonoBehaviour
         return new Airport(id, name, country, city, latitude, longitude);
     }
 
-    /// <summary>
-    /// Get all the info for a certain plane with a given id
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public Assets.Plane GetAllPlanesInfo(int id)
+    public List<PlaneQuantityManager> GetAirlineToPlaneInfo(int airlineID)
     {
-        string name = "";
-        int FuelCapacity = 0;
-        int FuelDropRate = 0;
-        int AvrSpeed = 0;
-        int MaxSpeed = 0;
-        int MaxRange = 0;
+        List<PlaneQuantityManager> planes = new List<PlaneQuantityManager>();
+        int planeId = 0;
+        int quantity = 0;
 
         IDbConnection dbConnection = CreateAndOpenDatabase();
         IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        string idForDB = '"' + id.ToString() + '"';
+        string idForDB = '"' + airlineID.ToString() + '"';
 
-        dbCommandReadValues.CommandText = "SELECT Name, FuelCapacity, AvrSpeed, FuelDropRate, MaxRange, MaxSpeed FROM PlanesTable WHERE ID =" + idForDB + ';';
+        dbCommandReadValues.CommandText = "SELECT PlanesID, Quantity FROM AirlineToPlanesManager WHERE AirlineID =" + idForDB + ';';
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();
 
 
         while (dataReader.Read())
         {
-            name = dataReader.GetString(0);
-            FuelCapacity = dataReader.GetInt32(1);
-            AvrSpeed = dataReader.GetInt32(2);
-            FuelDropRate = dataReader.GetInt32(3);
-            MaxRange = dataReader.GetInt32(4);
-            MaxSpeed = dataReader.GetInt32(5);
+            planeId = dataReader.GetInt32(0);
+            quantity = dataReader.GetInt32(1);
+            planes.Add(new PlaneQuantityManager(airlineID, planeId, quantity));
+            
         }
 
         dbConnection.Close();
 
-        return new Assets.Plane(id, name, );
+        return planes;
     }
+
+    /// <summary>
+    /// Get all the info for a certain plane with a given id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    //public Assets.Plane GetAllPlanesInfo(int id)
+    //{
+    //    string name = "";
+    //    int FuelCapacity = 0;
+    //    int FuelDropRate = 0;
+    //    int AvrSpeed = 0;
+    //    int MaxSpeed = 0;
+    //    int MaxRange = 0;
+
+    //    IDbConnection dbConnection = CreateAndOpenDatabase();
+    //    IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
+    //    string idForDB = '"' + id.ToString() + '"';
+
+    //    dbCommandReadValues.CommandText = "SELECT Name, FuelCapacity, AvrSpeed, FuelDropRate, MaxRange, MaxSpeed FROM PlanesTable WHERE ID =" + idForDB + ';';
+    //    IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+
+
+    //    while (dataReader.Read())
+    //    {
+    //        name = dataReader.GetString(0);
+    //        FuelCapacity = dataReader.GetInt32(1);
+    //        AvrSpeed = dataReader.GetInt32(2);
+    //        FuelDropRate = dataReader.GetInt32(3);
+    //        MaxRange = dataReader.GetInt32(4);
+    //        MaxSpeed = dataReader.GetInt32(5);
+    //    }
+
+    //    dbConnection.Close();
+
+    //    return new Assets.Plane(id, name, FuelCapacity, AvrSpeed, MaxSpeed, FuelDropRate, MaxRange);
+    //}
 
     public Airline GetAllAirlineInfo(int id)
     {
         string name = "";
         string AirlineCode = "";
         int HomeAirport = 0;
-        List<int> airportID;
-        List<int> planeID;
-        List<Assets.Plane> planes = new List<Assets.Plane>();
+        List<PlaneQuantityManager> planes = new List<PlaneQuantityManager>();
 
         IDbConnection dbConnection = CreateAndOpenDatabase();
         IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
@@ -304,16 +319,33 @@ public class DataBaseManager : MonoBehaviour
 
         dbConnection.Close();
 
-        airportID = GetListOfElemntsFromTableMatchingCondition(id, "AirportID", "AirlinesToAirportsManager", "AirlineID");
+        planes = GetAirlineToPlaneInfo(id);
+        
 
-        for (int i = 0; i < airportID.Count; i++)
-        {
-            airports.Add(GetAllAirportInfo(airportID[i]));
-        }
-
-        return new Airline(id, name, AirlineCode, , airportID, HomeAirport);
+        return new Airline(id, name, AirlineCode, planes, HomeAirport);
     }
 
+    public int SelectRandomAirportIdFromTable(int AirlineId, int MainAirportID)
+    {
+        int returnedId=0;
+        IDbConnection dbConnection = CreateAndOpenDatabase();
+        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
+        string AirlineIdForDB = '"' + AirlineId.ToString() + '"';
+        string MainAirportIDForDB = '"' + MainAirportID.ToString() + '"';
+
+
+        dbCommandReadValues.CommandText = "SELECT AirportID FROM AirlinesToAirportsManager WHERE AirlineID =" + AirlineIdForDB + "AND AirportID <>" + MainAirportIDForDB + "ORDER BY RANDOM() LIMIT 1;";
+        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+        
+        while (dataReader.Read())
+        {
+            returnedId = dataReader.GetInt32(0);
+        }
+        
+        dbConnection.Close();
+
+        return returnedId;
+    }
     /// <summary>
     /// This function receives the table name, column name and a specific item in that column
     /// and returns the id of that row
