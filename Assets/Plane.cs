@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Assets
         private int currentSpeed;
         private int maxRange;
         private int distanceTraveled;
+        private bool inUse;
         public static int AlldistanceTraveled = 0;
 
         private Plane(int DBplaneID, string planeName, int fuelCapacity, int avrSpeed, int maxSpeed, int fuelDropRate, int maxRange)
@@ -38,6 +40,7 @@ namespace Assets
             this.currentSpeed = 0;
             this.distanceTraveled = 0;
             this.flight = null;
+            this.inUse = false;
             this.maxRange = maxRange;
         }
 
@@ -64,6 +67,16 @@ namespace Assets
             return this.avrSpeed;
         }
 
+        public bool isInUse()
+        {
+            return this.inUse;
+        }
+
+        public DateTime WhenWillBeReady()
+        {
+            TimeSpan timeSpan = TimeSpan.FromHours(flight.GetFlightDuration()+1);
+             return flight.GetEstimatedLanding().Add(timeSpan);
+        }
         public bool SetFlight(Flight flight)
         {
             if ( flight == null )

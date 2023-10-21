@@ -13,7 +13,7 @@ namespace Assets
 
         private AirportManager(Airport airport, int numberOfDailyFlights, int flightIntervals) : base(airport)
         {
-            this.flightSchedule = FlightSchedule.CreateFlightSchedule(numberOfDailyFlights, DateTime.Today, flightIntervals, GetAirportID());
+            this.flightSchedule = FlightSchedule.CreateFlightSchedule(numberOfDailyFlights, DateTime.Today, flightIntervals, Airport airport);
         }
 
         public static AirportManager InitializeAirportManager(Airport airport, int numberOfDailyFlights, int flightIntervals)

@@ -84,7 +84,7 @@ namespace Assets
             int flight_numbers=0;
             while (flag)
             {
-                flight_numbers = rnd.Next(100, 9999);
+                flight_numbers = rnd.Next(100, 10000);
                 flag = false;
 
                 foreach (int combination in this.airline.GetFlightNumbers())
@@ -121,6 +121,16 @@ namespace Assets
             return this.distanceTraveled;
         }
 
+        public int GetFlightDuration()
+        { 
+            return this.flightDuration; 
+        }
+        public DateTime GetEstimatedLanding()
+        { 
+            return this.estimatedLandingTime; 
+        }
+
+       
         private Location GetFlightLocation()
         {
             if (!this.isTakeoff)
