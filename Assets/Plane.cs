@@ -8,7 +8,7 @@ using UnityEngine.Experimental.Rendering;
 
 namespace Assets
 {
-    class Plane
+    public class Plane
     {
         private string realPlaneID;
         private readonly int DBplaneID;
@@ -26,7 +26,7 @@ namespace Assets
         private bool inUse;
         public static int AlldistanceTraveled = 0;
 
-        private Plane(int DBplaneID, string planeName, int fuelCapacity, int avrSpeed, int maxSpeed, int fuelDropRate, int maxRange)
+        public Plane(int DBplaneID, string planeName, int fuelCapacity, int fuelDropRate, int avrSpeed, int maxSpeed, int maxRange)
         {
             this.DBplaneID = DBplaneID;
             this.realPlaneID = "";
@@ -51,12 +51,13 @@ namespace Assets
         
         public void BindAirlineToCurrentPlane(Airline airline, int index)
         {
-            if (this.airline == null)
+            if (this.airline != null)
             {
                 this.airline = airline;
                 this.realPlaneID = CreatePlaneID(index);
             }
         }
+
         public int GetPlaneID()
         {
             return this.DBplaneID;
@@ -72,20 +73,17 @@ namespace Assets
             return this.inUse;
         }
 
-        public DateTime WhenWillBeReady()
+        //public DateTime WhenWillBeReady()
+        //{
+        //    TimeSpan timeSpan = TimeSpan.FromHours(flight.GetFlightDuration()+1);
+        //     return flight.GetEstimatedLanding().Add(timeSpan);
+        //}
+        public void SetFlight(Flight flight)
         {
-            TimeSpan timeSpan = TimeSpan.FromHours(flight.GetFlightDuration()+1);
-             return flight.GetEstimatedLanding().Add(timeSpan);
-        }
-        public bool SetFlight(Flight flight)
-        {
-            if ( flight == null )
+            if ( flight != null )
             {
                 this.flight = flight;
-                return true;
             }
-
-            return false;
         }
     }
 }

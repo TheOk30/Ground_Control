@@ -11,18 +11,19 @@ namespace Assets
     {
         private Flight[] flights;
         private readonly DateTime date;
-        private int flightIntervals;
+        private double flightIntervals;
         private int numberOfDailyFlights;
-        private Airport MainAirportId;
+        private Airport MainAirport;
         public static int numberOfFlightsOnSchedule = 0;
         private static FlightSchedule Instance = null;
-        private FlightSchedule(int numberOfDailyFlights, DateTime date, int flightIntervals, Airport airport)
+
+        private FlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport)
         {
-            this.numberOfDailyFlights = numberOfDailyFlights;
-            this.flights = new Flight[this.numberOfDailyFlights];
-            this.date = date;
             this.flightIntervals = flightIntervals;
-            this.MainAirportId = airport;
+            this.numberOfDailyFlights = (int)Math.Ceiling((24 - flightStartTime) * (60.0 / this.flightIntervals));
+            this.flights = new Flight[this.numberOfDailyFlights-1];
+            this.date = date;
+            this.MainAirport = MainAirport;
 
             CreateFlights();
         }
@@ -31,72 +32,67 @@ namespace Assets
         {
             DateTime flightscheduleDate = this.date;
             
-            for (int i = 0; i < this.flights.Length && this.numberOfDailyFlights > numberOfFlightsOnSchedule; i++)
+            for (int i = 0; i < this.flights.Length; i++)
             {
-                this.flights[i] = AddFlight(flightscheduleDate);
+                this.flights[i] = AddFlight(flightscheduleDate.AddMinutes(i* flightIntervals));
             }
         }
         
-        private Flight AddFirstFlight()
-        {
-            Random rnd = new Random();
-            int mainIsTakeOff = 1;
-
-            List<int> AirlinedFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirportId.GetAirportID());
-
-            int rndAirlineIndex = rnd.Next(0, AirlinedFlyingToCurrentAirport.Count);
-            Airline airline = DataBaseManager.Instance.GetAllAirlineInfo(this.MainAirportId.GetAirportID());
-
-            int otherAirportID;
-            if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirportId.GetAirportID())
-            {
-                otherAirportID = airline.GetHomeAirport();
-            }
-
-            else
-            {
-                otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirportId.GetAirportID());
-            }
-
-
-            Airport otherAirport = DataBaseManager.Instance.GetAllAirportInfo(otherAirportID);
-
-            int flightDistance = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(this.MainAirportId, otherAirport);
-
-
-        }
+        /// <summary>
+        /// Add a flight for the schedule working per day
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         private Flight AddFlight(DateTime time) 
         {
+            //calculates if the Main airport is takeoff or not
             Random rnd = new Random();
-            int  mainIsTakeOff = rnd.Next(2);
+            int mainIsTakeOff = rnd.Next(2);
 
-            List<int> AirlinedFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirportId.GetAirportID());
+            //Get a list of all the airlines that are flying to the main airport
+            List<int> AirlineFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirport.GetAirportID());
 
-            int rndAirlineIndex = rnd.Next(0, AirlinedFlyingToCurrentAirport.Count);
-            Airline airline = DataBaseManager.Instance.GetAllAirlineInfo(this.MainAirportId.GetAirportID());
+            //generate random airline
+            int rndAirlineIndex = rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
 
-            int otherAirportID;
-            if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirportId.GetAirportID())
+            Plane plane = null;
+            Airline airline = null;
+            int otherAirportID = this.MainAirport.GetAirportID();
+            Airport otherAirport = null;
+
+            while (plane == null)
             {
-                 otherAirportID = airline.GetHomeAirport();
+                airline = DataBaseManager.Instance.GetAllAirlineInfo(rndAirlineIndex);
+
+                if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirport.GetAirportID())
+                {
+                    otherAirportID = airline.GetHomeAirport();
+                }
+
+                else
+                {
+                    while (otherAirportID == this.MainAirport.GetAirportID())
+                        otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirport.GetAirportID());
+                }
+
+
+                otherAirport = DataBaseManager.Instance.GetAllAirportInfo(otherAirportID);
+
+                int flightDistance = Airport.DistanceBetweenAirports(this.MainAirport, otherAirport);
+
+                plane = DataBaseManager.Instance.GetRandomPlane(airline.GetAirlineID(), flightDistance);
+                AirlineFlyingToCurrentAirport.Remove(rndAirlineIndex);
+            }
+            
+
+            airline.BindPlaneToAirline(plane);
+
+            if (mainIsTakeOff == 1)
+            {
+                return new Flight(airline, plane, this.MainAirport, otherAirport, time);
             }
 
-            else
-            {
-                otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirportId.GetAirportID());
-            }
-           
-           
-            Airport otherAirport = DataBaseManager.Instance.GetAllAirportInfo(otherAirportID);
-
-            int flightDistance = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(this.MainAirportId, otherAirport);
-
-            return new Flight();
-        }
-
-        private Flight AddFlight(DateTime time, )
-        {
-
+            return new Flight(airline, plane, otherAirport, this.MainAirport, time);
         }
 
         public DateTime GetDate()       
@@ -109,11 +105,29 @@ namespace Assets
             return numberOfFlightsOnSchedule;
         }
 
-        public static FlightSchedule CreateFlightSchedule(int numberOfDailyFlights, DateTime date, int flightIntervals, Airport MainAirportId)
+        public static FlightSchedule CreateFlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport)
         {
             if(Instance == null || DateTime.Compare(Instance.GetDate(), date) > 0) 
-                Instance = new FlightSchedule(numberOfDailyFlights, date, flightIntervals, MainAirportId);
+                Instance = new FlightSchedule(flightStartTime, date, flightIntervals, MainAirport);
             return Instance;
+        }
+
+        public override string ToString()
+        {
+            string str = "";
+
+            if (this.flights.Count() != 0)
+            {
+                foreach (Flight flight in this.flights)
+                {
+                    if (flight != null)
+                    {
+                        str += flight.ToString() + "\n";
+                    }
+                }
+            }
+
+            return str;
         }
     }
 }

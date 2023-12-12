@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 namespace Assets
 {
-    class Flight
+    public class Flight
     {
         private int flightID;
         private string flightNumber;
@@ -45,13 +46,11 @@ namespace Assets
         public Flight(Airline airline, Plane plane, Airport departingAirport, Airport arrivalAirport, DateTime estimatedTakeoffTime)
         {
             this.flightID = ++NumberOfFlights;
-            this.flightNumber = CreateFlightNumber();
             this.airline = airline;
             this.plane = plane;
-            this.planeInUse = plane.SetFlight(this);
             this.departingAirport = departingAirport;
             this.arrivalAirport = arrivalAirport;
-            this.flightDistance = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(this.departingAirport.GetLatitude(), this.departingAirport.GetLongitude(), 
+            this.flightDistance = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(this.departingAirport.GetLatitude(), this.departingAirport.GetLongitude(),
                                                                        this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude());
             this.estimatedTakeoffTime = estimatedTakeoffTime;
             this.flightDuration = CalculateFlightDuration();
@@ -74,17 +73,19 @@ namespace Assets
             this.isDelayInternal = false;
             this.isDelayExternal = false;
             this.isCancled = false;
-           
+
+            this.flightNumber = CreateFlightNumber();
+            BindPlaneToFlight();
         }
 
         private string CreateFlightNumber()
         {
             System.Random rnd = new System.Random();
             bool flag = true;
-            int flight_numbers=0;
+            int flight_numbers = 0;
             while (flag)
             {
-                flight_numbers = rnd.Next(100, 10000);
+                flight_numbers = rnd.Next(100, 1000);
                 flag = false;
 
                 foreach (int combination in this.airline.GetFlightNumbers())
@@ -122,15 +123,19 @@ namespace Assets
         }
 
         public int GetFlightDuration()
-        { 
-            return this.flightDuration; 
+        {
+            return this.flightDuration;
         }
         public DateTime GetEstimatedLanding()
-        { 
-            return this.estimatedLandingTime; 
+        {
+            return this.estimatedLandingTime;
         }
 
-       
+        private void BindPlaneToFlight()
+        {
+            this.plane.SetFlight(this);
+        }
+
         private Location GetFlightLocation()
         {
             if (!this.isTakeoff)
@@ -149,8 +154,17 @@ namespace Assets
                 this.location = DistanceAndLocationsFunctions.GetCoorWithBearingAndDistance(this.departingAirport.GetLatitude(), this.departingAirport.GetLongitude(),
                                                                     this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude(), GetDistanceTravled());
             }
-            
+
             return this.location;
+        }
+
+
+        public override string ToString()
+        {
+            string str = this.flightNumber + ": " + this.departingAirport.GetAirportName() + " -> " + this.arrivalAirport.GetAirportName();
+            str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm dd-MM-yyyy");
+
+            return str;
         }
     }
 }

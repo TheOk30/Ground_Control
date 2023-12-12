@@ -13,21 +13,20 @@ namespace Assets
         private readonly string airportName;
         private readonly string country;
         private readonly string city;
+        private readonly string AirportCode;
+        private readonly int RunwayLength;
+        private int RunwayGrade;
 
-        public Airport(int airportID, string airportName, string country, string city, double latitude, double longitude) :base(latitude, longitude)
+
+        public Airport(int airportID, string airportName, string country, string city, double latitude, double longitude, string AirportCode, int RunwayLength) :base(latitude, longitude)
         {
             this.airportID = airportID;
             this.airportName = airportName;
             this.country = country;
             this.city = city;
-        }
-
-        public Airport(Airport airport) :base(airport.GetLatitude(), airport.GetLongitude())
-        {
-            this.airportID = airport.GetAirportID();
-            this.airportName = airport.GetAirportName();
-            this.city = airport.GetCountry();
-            this.city = airport.GetCity();
+            this.AirportCode = AirportCode;
+            this.RunwayLength = RunwayLength;
+            this.RunwayGrade = CalculateRunwayGrade();
         }
 
         public int GetAirportID()
@@ -48,6 +47,61 @@ namespace Assets
         public string GetCity()
         {
             return this.city;
+        }
+
+        public string GetAirportCode()
+        {
+            return this.AirportCode;
+        }
+
+        public int GetRunwayLength()
+        {
+            return this.RunwayLength;
+        }
+
+        public int GetRunwayGradde()
+        {
+            return this.RunwayGrade;
+        }
+
+        /// <summary>
+        /// Calculates the grade based on the runway length.
+        /// </summary>
+        /// <returns>The calculated grade.</returns>
+        private int CalculateRunwayGrade()
+        {
+            if (this.RunwayLength >= 4000)
+                return 10;
+            
+            else if (this.RunwayLength >= 3500)
+                return 9;
+
+            else if (this.RunwayLength >= 3200)
+                return 8;
+
+            else if (this.RunwayLength >= 3000)
+                return 7;
+
+            else if (this.RunwayLength >= 2800)
+                return 6;
+
+            else if (this.RunwayLength >= 2500)
+                return 5;
+
+            else if (this.RunwayLength >= 2200)
+                return 4;
+
+            else if (this.RunwayLength >= 2000)
+                return 3;
+
+            else if (this.RunwayLength >= 1800)
+                return 2;
+
+            else if (this.RunwayLength > 0)
+                return 1;
+
+            else
+                return 0;
         }
 
         public int DistanceFromCurrentAirport(Location local)

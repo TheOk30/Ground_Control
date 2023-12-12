@@ -15,21 +15,19 @@ namespace Assets
         private readonly string airlineName;
         private readonly string airlineCode;
         private List<int> flightNumbers;
-        private List<PlaneQuantityManager> allPlanesList;
+        //private List<PlaneQuantityManager> allPlanesList;
         private List<Plane> PlanesCreated;
         private int homeAirport;
-        //private int[] planesCounter;
 
         public Airline(int airlineID, string airlineName, string airlineCode, List<PlaneQuantityManager> allPlanesList, int homeAirport)
         {
             this.airlineID = airlineID;
             this.airlineName = airlineName;
             this.airlineCode = airlineCode;
-            this.allPlanesList = allPlanesList;
+            //this.allPlanesList = allPlanesList;
             this.PlanesCreated = new List<Plane>();
             this.flightNumbers = new List<int>();
             this.homeAirport = homeAirport;
-            //this.planesCounter = new int[DataBaseManager.Instance.GetTheLastIdFromTable("PlanesTable")];
         }
 
         public int GetAirlineID()
@@ -62,19 +60,18 @@ namespace Assets
             return this.homeAirport;
         }
 
-        //public void BindPlanesToAirline()
+        //public List<PlaneQuantityManager> GetPlanesList()
         //{
-        //    foreach (Plane plane in this.planes)
-        //    {
-        //        plane.BindAirlineToCurrentPlane(this, this.planesCounter[plane.GetPlaneID()]++);
-        //    }
-
+        //    return this.allPlanesList;
         //}
 
-        //public List<Plane> GetPlanes()
-        //{
-        //    return this.planes;
-        //}
+        //public static PlaneQuantityManager Get 
+
+        public void BindPlaneToAirline(Plane plane)
+        {
+            PlanesCreated.Add(plane);
+            plane.BindAirlineToCurrentPlane(this, PlanesCreated.IndexOf(plane));
+        }
 
         //public List<int> GetAirportsFlyingTo()
         //{

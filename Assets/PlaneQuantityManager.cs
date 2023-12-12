@@ -8,6 +8,8 @@ namespace Assets
 {
     public class PlaneQuantityManager
     {
+        public static int Planedsindex =0;
+        private int current_index;
         private int airlineID;
         private int planeID;
         private int quantity;
@@ -15,6 +17,7 @@ namespace Assets
 
         public PlaneQuantityManager(int airlineID, int planeID, int quantity)
         {
+            this.current_index = Planedsindex++;
             this.airlineID = airlineID;
             this.planeID = planeID;
             this.quantity = quantity;
@@ -36,9 +39,13 @@ namespace Assets
             return this.quantity; 
         }
 
-        public int GetPlanesCreated()
+        public int GetIndex(int Planedsindex)
         {
-            return planesCreated;
+            return this.current_index;
         }
+        //public int GetPlanesCreated()
+        //{
+        //    return planesCreated;
+        //}
     }
 }

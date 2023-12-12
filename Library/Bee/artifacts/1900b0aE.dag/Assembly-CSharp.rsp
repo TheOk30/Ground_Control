@@ -383,6 +383,7 @@
 "Assets/ExtractInformationToDB.cs"
 "Assets/Flight.cs"
 "Assets/FlightSchedule.cs"
+"Assets/FlightScheduleUI.cs"
 "Assets/Location.cs"
 "Assets/NewBehaviourScript.cs"
 "Assets/Plane.cs"
