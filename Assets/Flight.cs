@@ -159,11 +159,23 @@ namespace Assets
         }
 
 
-        public override string ToString()
+        public string ToString(string str1)
         {
-            string str = this.flightNumber + ": " + this.departingAirport.GetAirportName() + " -> " + this.arrivalAirport.GetAirportName();
-            str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm dd-MM-yyyy");
+            string str = "";
 
+            if (str1 == "HH:mm")
+            {
+                str = this.flightNumber + ": " + this.departingAirport.GetAirportCode() + " -> " + this.arrivalAirport.GetAirportCode();
+                str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm");
+            }
+
+            return str;
+        }
+
+        public new string ToString()
+        {
+            string str = this.flightNumber + ": " + this.departingAirport.GetAirportCode() + " -> " + this.arrivalAirport.GetAirportCode();
+            str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm dd-MM-yyyy");
             return str;
         }
     }

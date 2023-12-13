@@ -52,18 +52,17 @@ namespace Assets
             //Get a list of all the airlines that are flying to the main airport
             List<int> AirlineFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirport.GetAirportID());
 
-            //generate random airline
-            int rndAirlineIndex = rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
-
             Plane plane = null;
             Airline airline = null;
-            int otherAirportID = this.MainAirport.GetAirportID();
             Airport otherAirport = null;
 
             while (plane == null)
             {
+                //generate random airline
+                int rndAirlineIndex = rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
                 airline = DataBaseManager.Instance.GetAllAirlineInfo(rndAirlineIndex);
 
+                int otherAirportID = 0;
                 if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirport.GetAirportID())
                 {
                     otherAirportID = airline.GetHomeAirport();
@@ -71,8 +70,7 @@ namespace Assets
 
                 else
                 {
-                    while (otherAirportID == this.MainAirport.GetAirportID())
-                        otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirport.GetAirportID());
+                    otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirport.GetAirportID());
                 }
 
 
@@ -82,8 +80,7 @@ namespace Assets
 
                 plane = DataBaseManager.Instance.GetRandomPlane(airline.GetAirlineID(), flightDistance);
                 AirlineFlyingToCurrentAirport.Remove(rndAirlineIndex);
-            }
-            
+            } 
 
             airline.BindPlaneToAirline(plane);
 
@@ -105,6 +102,10 @@ namespace Assets
             return numberOfFlightsOnSchedule;
         }
 
+        public Flight[] GetFlights()
+        {
+            return this.flights;
+        }
         public static FlightSchedule CreateFlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport)
         {
             if(Instance == null || DateTime.Compare(Instance.GetDate(), date) > 0) 
@@ -122,7 +123,7 @@ namespace Assets
                 {
                     if (flight != null)
                     {
-                        str += flight.ToString() + "\n";
+                        str += flight.ToString("HH:mm") + "\n";
                     }
                 }
             }

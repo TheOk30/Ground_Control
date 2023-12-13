@@ -231,7 +231,7 @@ public class DataBaseManager : MonoBehaviour
 
             catch (InvalidCastException e)
             {
-                city = "No-Available-Information";
+                city = " ";
 
             }
 

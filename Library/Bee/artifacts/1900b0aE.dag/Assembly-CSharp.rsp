@@ -382,6 +382,7 @@
 "Assets/DistanceAndLocationsFunctions.cs"
 "Assets/ExtractInformationToDB.cs"
 "Assets/Flight.cs"
+"Assets/FlightButtonExpansion.cs"
 "Assets/FlightSchedule.cs"
 "Assets/FlightScheduleUI.cs"
 "Assets/Location.cs"
