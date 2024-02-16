@@ -58,21 +58,22 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.10f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\FlightButtonExpansion.cs" />
-    <Compile Include="Assets\FlightScheduleUI.cs" />
-    <Compile Include="Assets\BackgroundStretchHandler.cs" />
-    <Compile Include="Assets\Plane.cs" />
-    <Compile Include="Assets\PlaneQuantityManager.cs" />
-    <Compile Include="Assets\AirportManager.cs" />
-    <Compile Include="Assets\NewBehaviourScript.cs" />
-    <Compile Include="Assets\Flight.cs" />
-    <Compile Include="Assets\FlightSchedule.cs" />
-    <Compile Include="Assets\DataBaseManager.cs" />
-    <Compile Include="Assets\ExtractInformationToDB.cs" />
-    <Compile Include="Assets\DistanceAndLocationsFunctions.cs" />
-    <Compile Include="Assets\Airline.cs" />
-    <Compile Include="Assets\Location.cs" />
-    <Compile Include="Assets\Airport.cs" />
+    <Compile Include="Assets\Scripts\Controler\ExtractInformationToDB.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\AirportManager.cs" />
+    <Compile Include="Assets\Scripts\UI\BackgroundStretchHandler.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\Location.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\Plane.cs" />
+    <Compile Include="Assets\Scripts\Modles\Scheduler\FlightScheduleUI.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\Flight.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\Airport.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\Airline.cs" />
+    <Compile Include="Assets\Scripts\Modles\IssuesControler\FlightIssues.cs" />
+    <Compile Include="Assets\Scripts\Controler\DataBaseManager.cs" />
+    <Compile Include="Assets\Scripts\Modles\Scheduler\FlightSchedule.cs" />
+    <Compile Include="Assets\Scripts\Modles\FlightModles\PlaneQuantityManager.cs" />
+    <Compile Include="Assets\Scripts\Controler\DistanceAndLocationsFunctions.cs" />
+    <Compile Include="Assets\Scripts\UI\FlightButtonExpansion.cs" />
+    <Compile Include="Assets\Scripts\Modles\IssuesControler\Solutions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
