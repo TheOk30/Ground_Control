@@ -115,6 +115,16 @@ namespace Assets
             return (int)ETA;
         }
 
+        private void BindPlaneToFlight()
+        {
+            this.plane.SetFlight(this);
+        }
+
+        public void AddProblemToFlight(ProblemCreator problem)
+        {
+            this.problem = problem;
+        }
+
         private Location GetFlightLocation()
         {
             if (!this.isTakeoff)
@@ -179,14 +189,9 @@ namespace Assets
             return this.estimatedTakeoffTime;
         }
 
-        private void BindPlaneToFlight()
+        public ProblemCreator GetProblem()
         {
-            this.plane.SetFlight(this);
-        }
-
-        public void AddProblemToFlight(ProblemCreator problem)
-        {
-            this.problem = problem;
+            return this.problem;
         }
 
         public string ToString(string str1)

@@ -59,7 +59,7 @@ namespace Assets
             return this.RunwayLength;
         }
 
-        public int GetRunwayGradde()
+        public int GetRunwayGrade()
         {
             return this.RunwayGrade;
         }

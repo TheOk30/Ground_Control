@@ -15,7 +15,7 @@ namespace Assets
     /// </summary>
     class AirportManager
     {
-        private static AirportManager Instance = null;
+        public static AirportManager Instance = null;
 
         private Airport airport;
         private FlightSchedule flightSchedule;
@@ -34,24 +34,25 @@ namespace Assets
         /// Create the flight Schedule for each new day
         /// </summary>
         /// <param name="flightStartTime"></param>
-        public void CreateFlightScheduleForAirport(int flightStartTime)
+        private void CreateFlightScheduleForAirport(int flightStartTime)
         {
             //// maybe save the past flight schedule in some way
             
             DateTime startScheduleTime = DateTime.UtcNow.Date.AddMinutes(flightStartTime + this.flightIntervals);
             this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport);
+            AddProblemsToFligths();
         }
 
+        /// <summary>
+        /// Every flight has a problem object in them. However only sum of them are active.
+        /// This method allows for encapsulation and lets the problem creator act completely
+        /// As a "BlackBox" and no flight can know if it has a problem or not
+        /// </summary>
         private void AddProblemsToFligths()
         {
-            System.Random rnd = new System.Random();
             foreach (Flight flight in this.flightSchedule.GetFlights())
             {
-                //flight chosen to have a problem 
-                if (rnd.Next(1, 101) % SimulationController.percentageOfProblem == 0)
-                {
-                    flight.AddProblemToFlight(new ProblemCreator(flight.GetFlightDurationMinutes(), flight.GetTakeOffTime()));
-                } 
+                flight.AddProblemToFlight(new ProblemCreator(flight.GetFlightDurationMinutes(), flight.GetTakeOffTime()));
             }
         }
 
@@ -66,7 +67,5 @@ namespace Assets
                 Instance = new AirportManager(airport, flightIntervals, numRunways);
             return Instance;
         }
-
     }
 }
-
