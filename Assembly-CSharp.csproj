@@ -63,16 +63,20 @@
     <Compile Include="Assets\Scripts\UI\BackgroundStretchHandler.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\Location.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\Plane.cs" />
-    <Compile Include="Assets\Scripts\Modles\Scheduler\FlightScheduleUI.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\Flight.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\Airport.cs" />
+    <Compile Include="Assets\Scripts\Controler\TimerControler.cs" />
+    <Compile Include="Assets\Scripts\Controler\SimulationController.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\Airline.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesControler\FlightIssues.cs" />
+    <Compile Include="Assets\Scripts\UI\TimerUI.cs" />
+    <Compile Include="Assets\Scripts\UI\FlightScheduleUI.cs" />
     <Compile Include="Assets\Scripts\Controler\DataBaseManager.cs" />
     <Compile Include="Assets\Scripts\Modles\Scheduler\FlightSchedule.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModles\PlaneQuantityManager.cs" />
     <Compile Include="Assets\Scripts\Controler\DistanceAndLocationsFunctions.cs" />
     <Compile Include="Assets\Scripts\UI\FlightButtonExpansion.cs" />
+    <Compile Include="Assets\Scripts\Modles\IssuesControler\ProblemCreator.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesControler\Solutions.cs" />
   </ItemGroup>
   <ItemGroup>

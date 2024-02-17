@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Modles.IssuesControler;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -18,6 +19,7 @@ namespace Assets
         private Plane plane;
         private Airport departingAirport;
         private Airport arrivalAirport;
+        private ProblemCreator problem;
         private int flightDistance;
         private int distanceTraveled;
         private DateTime estimatedTakeoffTime;
@@ -55,7 +57,9 @@ namespace Assets
             this.estimatedTakeoffTime = estimatedTakeoffTime;
             this.flightDuration = CalculateFlightDuration();
             this.estimatedLandingTime = EstimatedLandingTime();
+            this.problem = null;
             this.location = departingAirport;
+
             this.timeInAir = 0;
             this.distanceTraveled = 0;
             this.Landed = false;
@@ -111,31 +115,6 @@ namespace Assets
             return (int)ETA;
         }
 
-        private DateTime EstimatedLandingTime()
-        {
-            return this.estimatedTakeoffTime.AddMinutes(this.flightDuration);
-        }
-
-        public int GetDistanceTravled()
-        {
-            this.distanceTraveled = this.timeInAir * this.plane.GetAvrSpeed();
-            return this.distanceTraveled;
-        }
-
-        public int GetFlightDuration()
-        {
-            return this.flightDuration;
-        }
-        public DateTime GetEstimatedLanding()
-        {
-            return this.estimatedLandingTime;
-        }
-
-        private void BindPlaneToFlight()
-        {
-            this.plane.SetFlight(this);
-        }
-
         private Location GetFlightLocation()
         {
             if (!this.isTakeoff)
@@ -146,7 +125,6 @@ namespace Assets
             else if (this.Landed)
             {
                 this.location = this.arrivalAirport;
-
             }
 
             else
@@ -158,6 +136,58 @@ namespace Assets
             return this.location;
         }
 
+        private DateTime EstimatedLandingTime()
+        {
+            return this.estimatedTakeoffTime.AddMinutes(this.flightDuration);
+        }
+
+        public int GetDistanceTravled()
+        {
+            this.distanceTraveled = this.timeInAir * this.plane.GetAvrSpeed();
+            return this.distanceTraveled;
+        }
+
+        /// <summary>
+        /// returns the flight duration in minutes
+        /// </summary>
+        /// <returns></returns>
+        public int GetFlightDurationMinutes()
+        {
+            return this.flightDuration;
+        }
+
+        /// <summary>
+        /// returns the flight duration in hours
+        /// </summary>
+        /// <returns></returns>
+        public int GetFlightDurationHours()
+        {
+            return this.flightDuration/60;
+        }
+
+        public DateTime GetEstimatedLanding()
+        {
+            return this.estimatedLandingTime;
+        }
+
+        /// <summary>
+        /// Get The takeof time of the flight
+        /// </summary>
+        /// <returns></returns>
+        public DateTime GetTakeOffTime()
+        {
+            return this.estimatedTakeoffTime;
+        }
+
+        private void BindPlaneToFlight()
+        {
+            this.plane.SetFlight(this);
+        }
+
+        public void AddProblemToFlight(ProblemCreator problem)
+        {
+            this.problem = problem;
+        }
 
         public string ToString(string str1)
         {

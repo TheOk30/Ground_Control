@@ -377,6 +377,8 @@
 "Assets/Scripts/Controler/DataBaseManager.cs"
 "Assets/Scripts/Controler/DistanceAndLocationsFunctions.cs"
 "Assets/Scripts/Controler/ExtractInformationToDB.cs"
+"Assets/Scripts/Controler/SimulationController.cs"
+"Assets/Scripts/Controler/TimerControler.cs"
 "Assets/Scripts/Modles/FlightModles/Airline.cs"
 "Assets/Scripts/Modles/FlightModles/Airport.cs"
 "Assets/Scripts/Modles/FlightModles/AirportManager.cs"
@@ -385,11 +387,13 @@
 "Assets/Scripts/Modles/FlightModles/Plane.cs"
 "Assets/Scripts/Modles/FlightModles/PlaneQuantityManager.cs"
 "Assets/Scripts/Modles/IssuesControler/FlightIssues.cs"
+"Assets/Scripts/Modles/IssuesControler/ProblemCreator.cs"
 "Assets/Scripts/Modles/IssuesControler/Solutions.cs"
 "Assets/Scripts/Modles/Scheduler/FlightSchedule.cs"
-"Assets/Scripts/Modles/Scheduler/FlightScheduleUI.cs"
 "Assets/Scripts/UI/BackgroundStretchHandler.cs"
 "Assets/Scripts/UI/FlightButtonExpansion.cs"
+"Assets/Scripts/UI/FlightScheduleUI.cs"
+"Assets/Scripts/UI/TimerUI.cs"
 -langversion:9.0
 
 /deterministic

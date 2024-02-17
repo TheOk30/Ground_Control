@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Assets
 {
-    class FlightIssues
+    public class FlightIssues
     {
         private int id;
         private string name;
@@ -42,6 +42,24 @@ namespace Assets
         public string getName()
         {
             return name;
+        }
+
+        public enum IssueCode
+        {
+            LightlySick,
+            OtherSevereSick,
+            LightlyWounded,
+            SeverelyWounded,
+            Dying,
+            BrokenWheels,
+            ThrustIssue,
+            LooseDoor,
+            MissingDoor,
+            BrakeIssue,
+            LowOutputSingle,
+            LowOutputDouble,
+            EngineFailueSingle,
+            EngineFailueDouble
         }
     }
 }
