@@ -472,6 +472,11 @@ public class DataBaseManager : MonoBehaviour
         dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS PlanesTable (ID INTEGER PRIMARY KEY, Name TEXT, FuelCapacity INTEGER, AvrSpeed INTEGER, FuelDropRate INTEGER, MaxSpeed INTEGER, MaxRange INTEGER)";
         dbCommandCreateTable.ExecuteReader();
 
+        //Create a table for the Planes Table count in the database if it does not exist yet
+        dbCommandCreateTable = dbConnection.CreateCommand();
+        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS IssuesTable (ID INTEGER PRIMARY KEY, IssueName TEXT, IssueCode TEXT, FuelCapacity INTEGER)";
+        dbCommandCreateTable.ExecuteReader();
+
         return dbConnection;
     }
 }

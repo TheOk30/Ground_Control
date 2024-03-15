@@ -59,6 +59,12 @@ public class Timer : MonoBehaviour
         {
             CheckIfFlightsHaveIssues(time);
         }
+
+        // The time is midnight (00:00:00)
+        if (time.TimeOfDay == TimeSpan.Zero)
+        {
+            ChangeFlightScheduleActivator(time);
+        }
     }
 
 
@@ -74,11 +80,10 @@ public class Timer : MonoBehaviour
                 // Do something probably start executing the solver 
             }
         }
-
     }
 
-
-
-
-    
+    private void ChangeFlightScheduleActivator(DateTime time)
+    {
+       //
+    }
 }
