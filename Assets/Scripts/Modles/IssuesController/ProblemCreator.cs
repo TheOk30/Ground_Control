@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Controler;
+﻿using Assets.Scripts.Controller;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -7,14 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
-using static Assets.FlightIssues;
 
 namespace Assets.Scripts.Modles.IssuesControler
 {
     public class ProblemCreator
     {
         private int issueNumber = 0;
-        private int TimeTillApearenceInteger;
+        //private int TimeTillApearenceInteger;
         private FlightIssues issue = null;
         private DateTime ApearenceTime;
         private int ActiveProblem = 0;
@@ -26,16 +25,17 @@ namespace Assets.Scripts.Modles.IssuesControler
             //flight chosen to have a problem 
             if (rnd.Next(1, 101) % SimulationController.percentageOfProblem == 0)
             {
-                this.issueNumber = rnd.Next(0, Enum.GetNames(typeof(FlightIssues.IssueCode)).Length); //Get the sizeof the enum. Safe for future enum changes
-                this.TimeTillApearenceInteger = rnd.Next(SimulationController.First_LastProblemTimePossible, FlightDuration - SimulationController.First_LastProblemTimePossible);
+                this.issueNumber = rnd.Next(1, DataBaseManager.Instance.GetTheLastIdFromTable("IssuesTable")+1); //Get the sizeof the enum. Safe for future enum changes
+                int TimeTillApearenceInteger = rnd.Next(SimulationController.First_LastProblemTimePossible, FlightDuration - SimulationController.First_LastProblemTimePossible);
                 this.ApearenceTime = takeoffTime.AddMinutes(TimeTillApearenceInteger);
+                Debug.Log(this.issueNumber + " "+  this.ApearenceTime.ToString("HH:mm:ss"));
             }           
         }
 
         public bool HasProblem(DateTime currentSystemTime)
         {
             if(this.ActiveProblem == 1)
-                return true;
+                return false;
 
             if(this.issueNumber == 0)
                 return false;
@@ -52,18 +52,17 @@ namespace Assets.Scripts.Modles.IssuesControler
 
         private void MakeProblemAppear()
         {
-            //Get all the problem info from the DataBase
-            //insert the problem and assign the value to the 
+            this.issue = DataBaseManager.Instance.GetIssueInfo(this.issueNumber);
         }
 
         private bool CheckCountDown(DateTime currentSystemTime)
         {
-            return this.ApearenceTime.Equals(currentSystemTime);
+            return DateTime.Equals(this.ApearenceTime, currentSystemTime);
         }
 
         public FlightIssues GetIssue()
         {
-            return issue;
+            return this.issue;
         }  
     }
 }

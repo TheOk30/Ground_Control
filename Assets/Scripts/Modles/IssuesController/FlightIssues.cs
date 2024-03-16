@@ -14,52 +14,58 @@ namespace Assets
         private int grade;
         private string code;
 
-        private static int numProblems =0;
 
         public FlightIssues()
         {
-            this.id = numProblems++;
+            this.id = 0;
             this.name = " ";
             this.description = " ";
             this.grade = 0;
             this.code = "-1";
         }
 
-        public FlightIssues(string name, string description, int grade, string code)
+        public FlightIssues(int id, string code, string name, string description, int grade)
         {
-            this.id = numProblems++;
+            this.id = id;
+            this.code = code;
             this.name = name;
             this.description = description;
             this.grade = grade;
-            this.code = code;
         }
 
-        public int getId()
+        public int GetId()
         {
             return id;
         }
 
-        public string getName()
+        public string GetCode()
+        {
+            return code;
+        }
+
+        public string GetName()
         {
             return name;
         }
 
-        public enum IssueCode
-        {
-            LightlySick,
-            OtherSevereSick,
-            LightlyWounded,
-            SeverelyWounded,
-            Dying,
-            BrokenWheels,
-            ThrustIssue,
-            LooseDoor,
-            MissingDoor,
-            BrakeIssue,
-            LowOutputSingle,
-            LowOutputDouble,
-            EngineFailueSingle,
-            EngineFailueDouble
-        }
+        //public enum Issues
+        //{
+        //    LightlySick = 1,
+        //    OtherSevereSick,
+        //    LightlyWounded,
+        //    SeverelyWounded,
+        //    Dying,
+        //    NotEnoughFuel,
+        //    FasterBurnRate,
+        //    BrokenWheels,
+        //    ThrustIssue,
+        //    LooseDoor,
+        //    MissingDoor,
+        //    BrakeIssue,
+        //    LowOutputSingle,
+        //    LowOutputDouble,
+        //    EngineFailueSingle,
+        //    EngineFailueDouble
+        //}
     }
 }

@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
-using Assets.Scripts.Controler;
+using Assets.Scripts.Controller;
 using Assets;
 using Assets.Scripts.Modles.IssuesControler;
 using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
+using Assets.Scripts.SolverController;
 
 public class Timer : MonoBehaviour
 {
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private bool isRunning = true;
-    [SerializeField] private float timeSpeedMultiplier = (float)(SimulationController.TimeSpeeder); // Make time passage 10 times faster
+    private float timeSpeedMultiplier = SimulationController.TimeSpeeder; // Make time passage 10 times faster
     public DateTime time;
 
     private float accumulatedTime = 0f;
@@ -20,6 +22,7 @@ public class Timer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        print(timeSpeedMultiplier);
         timerText.text = "";
         DateTime today = DateTime.Today;
         time = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
@@ -32,7 +35,7 @@ public class Timer : MonoBehaviour
         while (isRunning)
         {
             // Accumulate time with multiplier
-            accumulatedTime += Time.deltaTime * timeSpeedMultiplier; 
+            accumulatedTime += Time.deltaTime * this.timeSpeedMultiplier; 
 
             while (accumulatedTime >= 1.0f)
             {
@@ -77,11 +80,14 @@ public class Timer : MonoBehaviour
         {
             if (flight.GetProblem().HasProblem(time))
             {
-                // Do something probably start executing the solver 
+                print(flight.ToString());
+                print(flight.GetProblem().GetIssue().GetName().ToString());
+
+                Solver s = new Solver(flight);
             }
         }
     }
-
+     
     private void ChangeFlightScheduleActivator(DateTime time)
     {
        //
