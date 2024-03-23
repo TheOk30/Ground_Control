@@ -40,7 +40,7 @@ namespace Assets.Scripts.SolverController
 
         public Solver(Flight flight)
         {
-            Debug.Log("Issue In solver" + flight.GetProblem().GetIssue().GetId());
+            //Debug.Log("Issue In solver" + flight.GetProblem().GetIssue().GetId());
             SolvingFunctionsDict[flight.GetProblem().GetIssue().GetId()].Invoke();
         }
 

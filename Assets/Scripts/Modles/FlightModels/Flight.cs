@@ -59,7 +59,6 @@ namespace Assets
             this.estimatedLandingTime = EstimatedLandingTime();
             this.problem = null;
             this.location = departingAirport;
-
             this.timeInAir = 0;
             this.distanceTraveled = 0;
             this.Landed = false;

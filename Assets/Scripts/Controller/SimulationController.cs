@@ -19,6 +19,6 @@ namespace Assets.Scripts.Controller
         public const int First_LastProblemTimePossible = 20;
 
         //Time speeder for the simulation
-        public const int TimeSpeeder = 10000;
+        public const int TimeSpeeder = 1000;
     }
 }

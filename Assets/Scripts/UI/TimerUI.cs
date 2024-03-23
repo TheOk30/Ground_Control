@@ -70,7 +70,6 @@ public class Timer : MonoBehaviour
         }
     }
 
-
     private void CheckIfFlightsHaveIssues(DateTime time)
     {
         if (AirportManager.Instance == null)
@@ -82,6 +81,8 @@ public class Timer : MonoBehaviour
             {
                 print(flight.ToString());
                 print(flight.GetProblem().GetIssue().GetName().ToString());
+                print(time.ToString("HH:mm:ss") + "  " + time.ToString("d/M/y"));
+
 
                 Solver s = new Solver(flight);
             }

@@ -25,13 +25,22 @@ namespace Assets.Scripts.Modles.IssuesControler
             //flight chosen to have a problem 
             if (rnd.Next(1, 101) % SimulationController.percentageOfProblem == 0)
             {
-                this.issueNumber = rnd.Next(1, DataBaseManager.Instance.GetTheLastIdFromTable("IssuesTable")+1); //Get the sizeof the enum. Safe for future enum changes
+                this.issueNumber = rnd.Next(1, DataBaseManager.Instance.GetTheLastIdFromTable("IssuesTable")+1); 
                 int TimeTillApearenceInteger = rnd.Next(SimulationController.First_LastProblemTimePossible, FlightDuration - SimulationController.First_LastProblemTimePossible);
                 this.ApearenceTime = takeoffTime.AddMinutes(TimeTillApearenceInteger);
                 Debug.Log(this.issueNumber + " "+  this.ApearenceTime.ToString("HH:mm:ss"));
             }           
         }
 
+        /// <summary>
+        /// Function checks if the problem has accured 
+        /// Acts as an interface to check problems for every flight Interface 
+        /// </summary>
+        /// <param name="currentSystemTime"></param>
+        /// <returns>
+        ///     true if the problem has been activated
+        ///     false if there is there is no problem active
+        /// </returns>
         public bool HasProblem(DateTime currentSystemTime)
         {
             if(this.ActiveProblem == 1)
