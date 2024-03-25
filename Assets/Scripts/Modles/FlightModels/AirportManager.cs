@@ -1,10 +1,12 @@
 ﻿using Assets.Scripts.Controller;
+using Assets.Scripts.DataStructures;
 using Assets.Scripts.Modles.IssuesControler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
@@ -17,7 +19,7 @@ namespace Assets
     {
         public static AirportManager Instance = null;
 
-        private Airport airport;
+        private readonly Airport airport;
         private FlightSchedule flightSchedule;
         private int flightIntervals;
         private int numRunways;
@@ -39,7 +41,7 @@ namespace Assets
             //// maybe save the past flight schedule in some way
             
             DateTime startScheduleTime = DateTime.UtcNow.Date.AddMinutes(flightStartTime + this.flightIntervals);
-            this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport);
+            this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport, this.numRunways);
             AddProblemsToFligths();
         }
 
@@ -50,12 +52,16 @@ namespace Assets
         /// </summary>
         private void AddProblemsToFligths()
         {
-            foreach (Flight flight in this.flightSchedule.GetFlights())
+            foreach (Flight flight in this.flightSchedule.GetFlights().GetHeap())
             {
                 flight.AddProblemToFlight(new ProblemCreator(flight.GetFlightDurationMinutes(), flight.GetTakeOffTime()));
             }
         }
 
+        public Airport GetMainAirport()
+        {
+            return this.airport;
+        }
         public FlightSchedule GetFlightSchedule()
         {
             return this.flightSchedule;

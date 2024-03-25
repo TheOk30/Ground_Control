@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.DataStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,22 +10,23 @@ namespace Assets
 {
     class FlightSchedule
     {
-        private Flight[] flights;
+        private MinHeap<Flight> flights;
         private readonly DateTime date;
         private double flightIntervals;
         private int numberOfDailyFlights;
         private Airport MainAirport;
         public static int numberOfFlightsOnSchedule = 0;
         private static FlightSchedule Instance = null;
+        private int numRunways;
 
-        private FlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport)
+        private FlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport, int numRunways)
         {
             this.flightIntervals = flightIntervals;
             this.numberOfDailyFlights = (int)Math.Ceiling((24 - flightStartTime) * (60.0 / this.flightIntervals));
-            this.flights = new Flight[this.numberOfDailyFlights-1];
+            this.flights = new MinHeap<Flight>();
             this.date = date;
             this.MainAirport = MainAirport;
-
+            this.numRunways = numRunways;
             CreateFlights();
         }
 
@@ -32,9 +34,9 @@ namespace Assets
         {
             DateTime flightscheduleDate = this.date;
             
-            for (int i = 0; i < this.flights.Length; i++)
+            for (int i = 0; i < this.numberOfDailyFlights; i++)
             {
-                this.flights[i] = AddFlight(flightscheduleDate.AddMinutes(i* flightIntervals));
+                this.flights.Insert(AddFlight(flightscheduleDate.AddMinutes(i* flightIntervals)));
             }
         }
         
@@ -102,14 +104,14 @@ namespace Assets
             return numberOfFlightsOnSchedule;
         }
 
-        public Flight[] GetFlights()
+        public MinHeap<Flight> GetFlights()
         {
             return this.flights;
         }
-        public static FlightSchedule CreateFlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport)
+        public static FlightSchedule CreateFlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport, int numRunways)
         {
             if(Instance == null || DateTime.Compare(Instance.GetDate(), date) > 0) 
-                Instance = new FlightSchedule(flightStartTime, date, flightIntervals, MainAirport);
+                Instance = new FlightSchedule(flightStartTime, date, flightIntervals, MainAirport, numRunways);
             return Instance;
         }
 
@@ -117,9 +119,9 @@ namespace Assets
         {
             string str = "";
 
-            if (this.flights.Count() != 0)
+            if (this.flights.GetSize() != 0)
             {
-                foreach (Flight flight in this.flights)
+                foreach (Flight flight in this.flights.GetHeap())
                 {
                     if (flight != null)
                     {

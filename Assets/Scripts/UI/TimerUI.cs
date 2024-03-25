@@ -74,8 +74,9 @@ public class Timer : MonoBehaviour
     {
         if (AirportManager.Instance == null)
             return;
-        
-        foreach (Flight flight in AirportManager.Instance.GetFlightSchedule().GetFlights())
+
+        List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
+        foreach (Flight flight in flightsList)
         {
             if (flight.GetProblem().HasProblem(time))
             {

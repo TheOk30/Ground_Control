@@ -11,7 +11,7 @@ using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 namespace Assets
 {
-    public class Flight
+    public class Flight : IComparable<Flight>
     {
         private int flightID;
         private string flightNumber;
@@ -27,6 +27,8 @@ namespace Assets
         private int flightDuration;
         private Location location;
         private int timeInAir;
+
+        private bool isLandingAtMain;
         private bool isReady;
         private bool Landed;
         private bool isLanding;
@@ -59,6 +61,9 @@ namespace Assets
             this.estimatedLandingTime = EstimatedLandingTime();
             this.problem = null;
             this.location = departingAirport;
+
+            this.isLandingAtMain = IsLandingOrTakeOffFlight();
+
             this.timeInAir = 0;
             this.distanceTraveled = 0;
             this.Landed = false;
@@ -124,6 +129,22 @@ namespace Assets
             this.problem = problem;
         }
 
+        private DateTime EstimatedLandingTime()
+        {
+            return this.estimatedTakeoffTime.AddMinutes(this.flightDuration);
+        }
+
+        public int GetDistanceTravled()
+        {
+            this.distanceTraveled = this.timeInAir * this.plane.GetAvrSpeed();
+            return this.distanceTraveled;
+        }
+
+        public bool IsLandingOrTakeOffFlight()
+        {
+            return this.arrivalAirport.GetAirportCode() == AirportManager.Instance.GetMainAirport().GetAirportCode();
+        }
+
         private Location GetFlightLocation()
         {
             if (!this.isTakeoff)
@@ -143,17 +164,6 @@ namespace Assets
             }
 
             return this.location;
-        }
-
-        private DateTime EstimatedLandingTime()
-        {
-            return this.estimatedTakeoffTime.AddMinutes(this.flightDuration);
-        }
-
-        public int GetDistanceTravled()
-        {
-            this.distanceTraveled = this.timeInAir * this.plane.GetAvrSpeed();
-            return this.distanceTraveled;
         }
 
         /// <summary>
@@ -198,6 +208,16 @@ namespace Assets
             return this.problem;
         }
 
+        private DateTime GetTimeToCompare()
+        {
+            return this.isLandingAtMain ? this.estimatedLandingTime : this.estimatedTakeoffTime;
+        }
+
+        public int CompareTo(Flight other)
+        {
+            return this.GetTimeToCompare().CompareTo(other.GetTimeToCompare());
+        }
+
         public string ToString(string str1)
         {
             string str = "";
@@ -205,7 +225,7 @@ namespace Assets
             if (str1 == "HH:mm")
             {
                 str = this.flightNumber + ": " + this.departingAirport.GetAirportCode() + " -> " + this.arrivalAirport.GetAirportCode();
-                str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm");
+                str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm") + " - " + estimatedLandingTime.ToString("HH:mm");
             }
 
             return str;
@@ -214,7 +234,7 @@ namespace Assets
         public new string ToString()
         {
             string str = this.flightNumber + ": " + this.departingAirport.GetAirportCode() + " -> " + this.arrivalAirport.GetAirportCode();
-            str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm dd-MM-yyyy");
+            str += " - " + this.airline.GetAirlineName() + " - " + estimatedTakeoffTime.ToString("HH:mm dd-MM-yyyy") + " -> " + estimatedLandingTime.ToString("HH:mm dd-MM-yyyy");
             return str;
         }
     }

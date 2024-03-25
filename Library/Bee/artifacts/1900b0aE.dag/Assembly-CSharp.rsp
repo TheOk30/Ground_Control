@@ -378,6 +378,7 @@
 "Assets/Scripts/Controller/DistanceAndLocationsFunctions.cs"
 "Assets/Scripts/Controller/ExtractInformationToDB.cs"
 "Assets/Scripts/Controller/SimulationController.cs"
+"Assets/Scripts/DataStructures/MinHeap.cs"
 "Assets/Scripts/Modles/FlightModels/Airline.cs"
 "Assets/Scripts/Modles/FlightModels/Airport.cs"
 "Assets/Scripts/Modles/FlightModels/AirportManager.cs"

@@ -6,6 +6,8 @@ using TMPro;
 using Assets;
 using static System.Net.Mime.MediaTypeNames;
 using Unity.VisualScripting;
+using Assets.Scripts.DataStructures;
+using System;
 
 public class FlightScheduleUI : MonoBehaviour
 {
@@ -19,11 +21,18 @@ public class FlightScheduleUI : MonoBehaviour
         AirportManager am = AirportManager.InitializeAirportManager(a, 60,1);
         am.CreateFlightScheduleForAirport(0);
 
-        foreach (Flight flight in am.GetFlightSchedule().GetFlights())
+        //foreach (Flight flight in am.GetFlightSchedule().GetFlights())
+        //{
+        //    GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
+        //    newButton.GetComponent<FlightButtonExpansion>().flight_button_text.text = flight.ToString("HH:mm");
+        //}      
+
+        // Iterate through the sorted list
+        foreach (Flight flight in am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap())
         {
             GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
             newButton.GetComponent<FlightButtonExpansion>().flight_button_text.text = flight.ToString("HH:mm");
-        }      
+        }
     }
 
     private void SelectLevel()
