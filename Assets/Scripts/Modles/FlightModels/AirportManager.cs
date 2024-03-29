@@ -38,10 +38,11 @@ namespace Assets
         /// <param name="flightStartTime"></param>
         public void CreateFlightScheduleForAirport(int flightStartTime)
         {
-            //// maybe save the past flight schedule in some way
+            // maybe save the past flight schedule in some way
             
             DateTime startScheduleTime = DateTime.UtcNow.Date.AddMinutes(flightStartTime + this.flightIntervals);
             this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport, this.numRunways);
+            this.flightSchedule.AreValuesBetweenNeighborsUnderThreshold();
             AddProblemsToFligths();
         }
 
@@ -62,6 +63,7 @@ namespace Assets
         {
             return this.airport;
         }
+
         public FlightSchedule GetFlightSchedule()
         {
             return this.flightSchedule;

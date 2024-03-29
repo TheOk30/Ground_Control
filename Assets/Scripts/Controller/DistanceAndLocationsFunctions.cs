@@ -96,8 +96,7 @@ namespace Assets
             double finalLat = lat * 180 / Math.PI;
             double finalLon = lon * 180 / Math.PI;
 
-            Location temp = new Location(finalLat, finalLon);
-            return temp;
+            return new Location(finalLat, finalLon);
         }
 
         public static Location GetCoorWithBearingAndDistance(double lat1, double lon1, double lat2, double lon2, int distanceTraveled)

@@ -15,18 +15,18 @@ public class Timer : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private bool isRunning = true;
     private float timeSpeedMultiplier = SimulationController.TimeSpeeder; // Make time passage 10 times faster
-    public DateTime time;
-
+    public static DateTime time;
+    private Solver solver;
     private float accumulatedTime = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        print(timeSpeedMultiplier);
         timerText.text = "";
         DateTime today = DateTime.Today;
         time = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
         StartCoroutine(UpdateTimeCoroutine());
+        solver = Solver.InitializeSolver();
     }
 
     // Coroutine to update time at fixed intervals
@@ -77,15 +77,19 @@ public class Timer : MonoBehaviour
 
         List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
         foreach (Flight flight in flightsList)
-        {
+        { 
             if (flight.GetProblem().HasProblem(time))
             {
                 print(flight.ToString());
                 print(flight.GetProblem().GetIssue().GetName().ToString());
                 print(time.ToString("HH:mm:ss") + "  " + time.ToString("d/M/y"));
 
+                if (ProblemCreator.problemFunctionsDict.ContainsKey(flight.GetProblem().GetIssue().GetId()))
+                {
+                    ProblemCreator.problemFunctionsDict[flight.GetProblem().GetIssue().GetId()].Invoke(flight);
+                }
 
-                Solver s = new Solver(flight);
+                solver.SolveFlightIssue(flight);
             }
         }
     }

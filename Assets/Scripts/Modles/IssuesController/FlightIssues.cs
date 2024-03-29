@@ -14,7 +14,6 @@ namespace Assets
         private int grade;
         private string code;
 
-
         public FlightIssues()
         {
             this.id = 0;
@@ -48,24 +47,14 @@ namespace Assets
             return name;
         }
 
-        //public enum Issues
-        //{
-        //    LightlySick = 1,
-        //    OtherSevereSick,
-        //    LightlyWounded,
-        //    SeverelyWounded,
-        //    Dying,
-        //    NotEnoughFuel,
-        //    FasterBurnRate,
-        //    BrokenWheels,
-        //    ThrustIssue,
-        //    LooseDoor,
-        //    MissingDoor,
-        //    BrakeIssue,
-        //    LowOutputSingle,
-        //    LowOutputDouble,
-        //    EngineFailueSingle,
-        //    EngineFailueDouble
-        //}
+        public string GetDescription()
+        {
+            return description;
+        }
+
+        public int GetGrade()
+        {
+            return grade;
+        }
     }
 }

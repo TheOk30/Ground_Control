@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.DataStructures;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,8 +49,8 @@ namespace Assets
         private Flight AddFlight(DateTime time) 
         {
             //calculates if the Main airport is takeoff or not
-            Random rnd = new Random();
-            int mainIsTakeOff = rnd.Next(2);
+            int mainIsTakeOff = SimulationController.rnd.Next(2);
+            int runwayChosen = SimulationController.rnd.Next(1, this.numRunways+1);
 
             //Get a list of all the airlines that are flying to the main airport
             List<int> AirlineFlyingToCurrentAirport = DataBaseManager.Instance.GetAirlinesFlyingToAirport(this.MainAirport.GetAirportID());
@@ -61,7 +62,7 @@ namespace Assets
             while (plane == null)
             {
                 //generate random airline
-                int rndAirlineIndex = rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
+                int rndAirlineIndex = SimulationController.rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
                 airline = DataBaseManager.Instance.GetAllAirlineInfo(rndAirlineIndex);
 
                 int otherAirportID = 0;
@@ -75,7 +76,6 @@ namespace Assets
                     otherAirportID = DataBaseManager.Instance.SelectRandomAirportIdFromTable(rndAirlineIndex, this.MainAirport.GetAirportID());
                 }
 
-
                 otherAirport = DataBaseManager.Instance.GetAllAirportInfo(otherAirportID);
 
                 int flightDistance = Airport.DistanceBetweenAirports(this.MainAirport, otherAirport);
@@ -88,10 +88,37 @@ namespace Assets
 
             if (mainIsTakeOff == 1)
             {
-                return new Flight(airline, plane, this.MainAirport, otherAirport, time);
+                return new Flight(airline, plane, this.MainAirport, otherAirport, time, runwayChosen);
             }
 
-            return new Flight(airline, plane, otherAirport, this.MainAirport, time);
+            return new Flight(airline, plane, otherAirport, this.MainAirport, time, runwayChosen);
+        }
+
+        public void AreValuesBetweenNeighborsUnderThreshold()
+        {
+            List<Flight> values = this.flights.GetSortedWithoutModifyingHeap();
+            for (int i = 1; i < values.Count; i++)
+            {
+                TimeSpan difference = values[i].GetTimeToCompare() - values[i - 1].GetTimeToCompare();
+
+                if ((int)difference.TotalSeconds < SimulationController.TimeBetweenFlightsOnSchedule)
+                {
+                    // Calculate the difference between the threshold and the difference between two flights
+                    int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule - (int)difference.TotalSeconds;
+
+                    // Adjust the time of current flight if it's landing at main
+                    if (values[i].GetIsFlightLandingAtMain())
+                    {
+                        values[i].ChangeLandingTime(differenceThreshold);
+                    }
+
+                    // Adjust the time of current flight if it's taking off at main
+                    else
+                    {
+                        values[i].ChangeTakeoffTime(differenceThreshold);
+                    }
+                }
+            }
         }
 
         public DateTime GetDate()       

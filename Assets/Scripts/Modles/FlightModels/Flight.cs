@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Modles.IssuesControler;
+﻿using Assets.Scripts.Controller;
+using Assets.Scripts.Modles.IssuesControler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace Assets
 {
     public class Flight : IComparable<Flight>
     {
-        private int flightID;
         private string flightNumber;
         private Airline airline;
         private Plane plane;
@@ -26,11 +26,11 @@ namespace Assets
         private DateTime estimatedLandingTime;
         private int flightDuration;
         private Location location;
-        private int timeInAir;
+        private int runway;
 
-        private bool isLandingAtMain;
+        private readonly bool isLandingAtMain;
         private bool isReady;
-        private bool Landed;
+        private bool landed;
         private bool isLanding;
         private bool isLandingPermission;
         private bool isTakeoff;
@@ -45,29 +45,25 @@ namespace Assets
         private bool isDelayExternal;
         private bool isCancled;
         private bool planeInUse;
-        public static int NumberOfFlights = 0;
 
-        public Flight(Airline airline, Plane plane, Airport departingAirport, Airport arrivalAirport, DateTime estimatedTakeoffTime)
+        public Flight(Airline airline, Plane plane, Airport departingAirport, Airport arrivalAirport, DateTime estimatedTakeoffTime, int runway)
         {
-            this.flightID = ++NumberOfFlights;
             this.airline = airline;
             this.plane = plane;
             this.departingAirport = departingAirport;
             this.arrivalAirport = arrivalAirport;
             this.flightDistance = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(this.departingAirport.GetLatitude(), this.departingAirport.GetLongitude(),
-                                                                       this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude());
+                                                                                           this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude());
             this.estimatedTakeoffTime = estimatedTakeoffTime;
-            this.flightDuration = CalculateFlightDuration();
-            this.estimatedLandingTime = EstimatedLandingTime();
+            CalculateFlightDuration();
+            EstimatedLandingTime();
             this.problem = null;
             this.location = departingAirport;
-
+            this.runway = runway;
             this.isLandingAtMain = IsLandingOrTakeOffFlight();
 
-            this.timeInAir = 0;
             this.distanceTraveled = 0;
-            this.Landed = false;
-            this.isReady = false;
+            this.landed = false;
             this.isLanding = false;
             this.isLandingPermission = false;
             this.isTakeoff = false;
@@ -82,18 +78,18 @@ namespace Assets
             this.isDelayExternal = false;
             this.isCancled = false;
 
-            this.flightNumber = CreateFlightNumber();
+            CreateFlightNumber();
             BindPlaneToFlight();
         }
 
-        private string CreateFlightNumber()
+        private void CreateFlightNumber()
         {
-            System.Random rnd = new System.Random();
             bool flag = true;
             int flight_numbers = 0;
+             
             while (flag)
             {
-                flight_numbers = rnd.Next(100, 1000);
+                flight_numbers = SimulationController.rnd.Next(100, 1000);
                 flag = false;
 
                 foreach (int combination in this.airline.GetFlightNumbers())
@@ -101,22 +97,21 @@ namespace Assets
                     if (combination == flight_numbers)
                     {
                         flag = true;
-                        break;
                     }
                 }
             }
 
             this.airline.AddFlightNumbers(flight_numbers);
-            return this.airline.GetAirlineCode() + flight_numbers;
+            this.flightNumber = this.airline.GetAirlineCode() + flight_numbers;
         }
 
-        private int CalculateFlightDuration()
+        private void CalculateFlightDuration()
         {
             double ETA = this.flightDistance / ((double)this.plane.GetAvrSpeed());
             ETA += 0.75;
             ETA *= 60;
 
-            return (int)ETA;
+            this.flightDuration = (int)ETA;
         }
 
         private void BindPlaneToFlight()
@@ -129,15 +124,23 @@ namespace Assets
             this.problem = problem;
         }
 
-        private DateTime EstimatedLandingTime()
+        private void EstimatedLandingTime()
         {
-            return this.estimatedTakeoffTime.AddMinutes(this.flightDuration);
+            TimeSpan duration = TimeSpan.FromMinutes(this.flightDuration);
+            this.estimatedLandingTime = this.estimatedTakeoffTime.Add(duration);
         }
 
-        public int GetDistanceTravled()
+        public int GetTimeTraveledMin(DateTime currentTime)
         {
-            this.distanceTraveled = this.timeInAir * this.plane.GetAvrSpeed();
-            return this.distanceTraveled;
+            TimeSpan timeElapsed = currentTime - this.estimatedTakeoffTime;
+            return (int)Math.Round(timeElapsed.TotalMinutes);
+        }
+
+        public int GetDistanceTraveled(DateTime currentTime)
+        {
+            // Dividing by 60 to convert speed to minutes
+            double distanceTraveled = this.plane.GetAvrSpeed() * (GetTimeTraveledMin(currentTime) / 60); 
+            return (int)Math.Round(distanceTraveled);
         }
 
         public bool IsLandingOrTakeOffFlight()
@@ -145,14 +148,14 @@ namespace Assets
             return this.arrivalAirport.GetAirportCode() == AirportManager.Instance.GetMainAirport().GetAirportCode();
         }
 
-        private Location GetFlightLocation()
+        public Location GetFlightLocation(DateTime currentTime)
         {
             if (!this.isTakeoff)
             {
                 this.location = this.departingAirport;
             }
 
-            else if (this.Landed)
+            else if (this.landed)
             {
                 this.location = this.arrivalAirport;
             }
@@ -160,10 +163,20 @@ namespace Assets
             else
             {
                 this.location = DistanceAndLocationsFunctions.GetCoorWithBearingAndDistance(this.departingAirport.GetLatitude(), this.departingAirport.GetLongitude(),
-                                                                    this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude(), GetDistanceTravled());
+                                                                    this.arrivalAirport.GetLatitude(), this.arrivalAirport.GetLongitude(), GetDistanceTraveled(currentTime));
             }
 
             return this.location;
+        }
+
+        public int GetDistanceToArrivalAirport(DateTime currentTime)
+        {
+            return this.arrivalAirport.DistanceFromCurrentAirport(GetFlightLocation(currentTime));
+        }
+
+        public Plane GetPlane()
+        {
+            return this.plane;
         }
 
         /// <summary>
@@ -208,9 +221,41 @@ namespace Assets
             return this.problem;
         }
 
-        private DateTime GetTimeToCompare()
+        public bool GetIsFlightLandingAtMain()
+        {
+            return this.isLandingAtMain;
+        }
+
+        public void ChangeTakeoffTime(int add)
+        {
+            this.estimatedTakeoffTime.AddMinutes(add);
+            this.estimatedLandingTime.AddMinutes(add);
+        }
+
+        public void ChangeLandingTime(int add)
+        {
+            this.flightDuration += add;
+            this.estimatedLandingTime.AddMinutes(add);
+        }
+
+        public void SetEstimatedLandingTime(DateTime landingTime)
+        {
+            this.estimatedLandingTime = landingTime;
+        }
+
+        public Airport GetArrivalAirport()
+        {
+            return this.GetArrivalAirport();
+        }
+
+        public DateTime GetTimeToCompare()
         {
             return this.isLandingAtMain ? this.estimatedLandingTime : this.estimatedTakeoffTime;
+        }
+
+        public void SetAlternateArrivalAirport(Airport alternateAirport)
+        {
+            this.arrivalAirport = alternateAirport;
         }
 
         public int CompareTo(Flight other)

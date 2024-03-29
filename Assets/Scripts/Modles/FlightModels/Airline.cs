@@ -15,8 +15,7 @@ namespace Assets
         private readonly string airlineName;
         private readonly string airlineCode;
         private List<int> flightNumbers;
-        //private List<PlaneQuantityManager> allPlanesList;
-        private List<Plane> PlanesCreated;
+        private List<Plane> planesCreated;
         private int homeAirport;
 
         public Airline(int airlineID, string airlineName, string airlineCode, List<PlaneQuantityManager> allPlanesList, int homeAirport)
@@ -24,8 +23,7 @@ namespace Assets
             this.airlineID = airlineID;
             this.airlineName = airlineName;
             this.airlineCode = airlineCode;
-            //this.allPlanesList = allPlanesList;
-            this.PlanesCreated = new List<Plane>();
+            this.planesCreated = new List<Plane>();
             this.flightNumbers = new List<int>();
             this.homeAirport = homeAirport;
         }
@@ -60,22 +58,10 @@ namespace Assets
             return this.homeAirport;
         }
 
-        //public List<PlaneQuantityManager> GetPlanesList()
-        //{
-        //    return this.allPlanesList;
-        //}
-
-        //public static PlaneQuantityManager Get 
-
         public void BindPlaneToAirline(Plane plane)
         {
-            PlanesCreated.Add(plane);
-            plane.BindAirlineToCurrentPlane(this, PlanesCreated.IndexOf(plane));
+            planesCreated.Add(plane);
+            plane.BindAirlineToCurrentPlane(this, planesCreated.IndexOf(plane));
         }
-
-        //public List<int> GetAirportsFlyingTo()
-        //{
-        //    return this.airportsFlyingTo;
-        //}
     }
 }

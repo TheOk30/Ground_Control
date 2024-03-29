@@ -142,7 +142,6 @@ namespace Assets.Scripts.DataStructures
                 heapCopy.Insert(element);
             }
 
-
             List<T> sortedList = new List<T>();
 
             // Extract minimum element from the copy of the heap until it's empty

@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Controller\DistanceAndLocationsFunctions.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesController\FlightIssues.cs" />
     <Compile Include="Assets\Scripts\UI\FlightButtonExpansion.cs" />
+    <Compile Include="Assets\Scripts\DataStructures\SpatialHashingLocationIndex.cs" />
     <Compile Include="Assets\Scripts\Controller\DataBaseManager.cs" />
     <Compile Include="Assets\Scripts\Controller\SimulationController.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModels\Airport.cs" />

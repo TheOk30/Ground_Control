@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Assets.Scripts.Controller;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine;
 
 namespace Assets
 {
@@ -14,7 +17,7 @@ namespace Assets
         private readonly int DBplaneID;
         private readonly string planeName;
         private readonly int fuelCapacity;
-        private readonly int fuelDropRate;
+        private int fuelDropRate;
         private int currentFuelLevel;
         private Airline airline;
         private Flight flight;
@@ -22,11 +25,9 @@ namespace Assets
         private int maxSpeed;
         private int currentSpeed;
         private int maxRange;
-        private int distanceTraveled;
-        private bool inUse;
-        public static int AlldistanceTraveled = 0;
+        private int grade;
 
-        public Plane(int DBplaneID, string planeName, int fuelCapacity, int fuelDropRate, int avrSpeed, int maxSpeed, int maxRange)
+        public Plane(int DBplaneID, string planeName, int fuelCapacity, int fuelDropRate, int avrSpeed, int maxSpeed, int maxRange, int grade)
         {
             this.DBplaneID = DBplaneID;
             this.realPlaneID = "";
@@ -37,11 +38,10 @@ namespace Assets
             this.airline = null;
             this.avrSpeed = avrSpeed;
             this.maxSpeed = maxSpeed;
-            this.currentSpeed = 0;
-            this.distanceTraveled = 0;
+            this.currentSpeed = this.avrSpeed;
             this.flight = null;
-            this.inUse = false;
             this.maxRange = maxRange;
+            this.grade = grade;
         }
 
         private string CreatePlaneID(int index)
@@ -58,6 +58,27 @@ namespace Assets
             }
         }
 
+        public int CalculateMaxSpeedIncrease(DateTime currentTime)
+        {
+            int minFuelPossible = (int)(this.fuelDropRate * SimulationController.minFuelPercentageAllowedAtLanding);
+            int newFuelDropRate = (int)(this.fuelDropRate * SimulationController.fuelBurnRateDiffCruiseToMax);
+            int distanceLeft = this.flight.GetDistanceToArrivalAirport(currentTime);
+
+            if (currentFuelLevel - minFuelPossible <= 0)
+            {
+                UnityEngine.Debug.Log("Error in Fuel LEVEL");
+                UnityEngine.Debug.Log(this.DBplaneID + " " + this.planeName);
+                return -1;
+            }
+
+            int newSpeed = (newFuelDropRate * distanceLeft) / (minFuelPossible - GetCurrentFuelLevel(currentTime));
+
+            if (newSpeed <= this.avrSpeed)
+                return -1;
+
+            return Math.Min(newSpeed, this.maxSpeed);
+        }
+
         public int GetPlaneID()
         {
             return this.DBplaneID;
@@ -68,16 +89,42 @@ namespace Assets
             return this.avrSpeed;
         }
 
-        public bool isInUse()
+        public int GetCurrentSpeed()
         {
-            return this.inUse;
+            return this.currentSpeed;
         }
 
-        //public DateTime WhenWillBeReady()
-        //{
-        //    TimeSpan timeSpan = TimeSpan.FromHours(flight.GetFlightDuration()+1);
-        //     return flight.GetEstimatedLanding().Add(timeSpan);
-        //}
+        public int GetGrade()
+        {
+            return this.grade;
+        }
+
+        public int GetFuelDropRate()
+        {  
+            return this.fuelDropRate; 
+        }   
+
+        public int GetCurrentFuelLevel(DateTime currentTime)
+        {
+            this.currentFuelLevel = this.fuelCapacity - (this.GetFuelDropRate() * this.flight.GetTimeTraveledMin(currentTime))/60;
+            return this.currentFuelLevel;
+        }
+
+        public void SetNewCurrentFuelLevel(int fuelLevel)
+        {
+            this.currentFuelLevel = fuelLevel;
+        }
+
+        public void SetNewFuelDropRate(int fuelDropRate)
+        {
+            this.fuelDropRate = fuelDropRate;
+        }
+
+        public void SetCurrentSpeed(int AvrSpeed)
+        {
+            this.currentSpeed = AvrSpeed;
+        }
+
         public void SetFlight(Flight flight)
         {
             if ( flight != null )
