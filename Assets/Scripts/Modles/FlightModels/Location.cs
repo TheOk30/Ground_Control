@@ -30,5 +30,10 @@
         {
             this.longitude = longitude;
         }
+
+        public override string ToString() 
+        {
+            return this.latitude + " ," + this.longitude;
+        }
     }
 }

@@ -94,6 +94,9 @@ namespace Assets
             return new Flight(airline, plane, otherAirport, this.MainAirport, time, runwayChosen);
         }
 
+        /// <summary>
+        /// Make sure value adhere to the rules of the airport
+        /// </summary>
         public void AreValuesBetweenNeighborsUnderThreshold()
         {
             List<Flight> values = this.flights.GetSortedWithoutModifyingHeap();

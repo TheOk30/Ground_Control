@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Assets
 {
+    /// <summary>
+    /// Class that holds the Issue Value
+    /// </summary>
     public class FlightIssues
     {
         private int id;

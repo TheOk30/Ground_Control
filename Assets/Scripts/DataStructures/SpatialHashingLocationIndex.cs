@@ -29,6 +29,9 @@ namespace Assets.Scripts
         private Dictionary<int, List<Location>> spatialHash;
         private int gridSize;
 
+        /// <summary>
+        /// Create the Hash Function
+        /// </summary>
         private SpatialHashingLocationIndex()
         {
             CalculateGridSize();
@@ -41,6 +44,10 @@ namespace Assets.Scripts
             }
         }
 
+        /// <summary>
+        /// Add a location to the Hash table
+        /// </summary>
+        /// <param name="location"></param>
         public void AddLocation(Location location)
         {
             int hash = ComputeHash(location.GetLatitude(), location.GetLongitude());
@@ -49,6 +56,12 @@ namespace Assets.Scripts
             spatialHash[hash].Add(location);
         }
 
+        /// <summary>
+        /// Find Closest Airport to the current location
+        /// </summary>
+        /// <param name="queryLocation"></param>
+        /// <param name="grade"></param>
+        /// <returns></returns>
         public Location FindClosestLocations(Location queryLocation, int grade)
         {
             int queryHash = ComputeHash(queryLocation.GetLatitude(), queryLocation.GetLongitude());
@@ -80,6 +93,12 @@ namespace Assets.Scripts
             return closestLocation != null ? closestLocation : null;
         }
 
+        /// <summary>
+        /// Create the Hash for each coordinate
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <returns></returns>
         private int ComputeHash(double latitude, double longitude)
         {
             int x = (int)(latitude / gridSize);
@@ -92,6 +111,9 @@ namespace Assets.Scripts
             return tuple.GetHashCode();
         }
 
+        /// <summary>
+        /// Calculate the grid size for the Hash table so we could find how many neighbors we can find
+        /// </summary>
         private void CalculateGridSize()
         {
             double width = DataBaseManager.Instance.GetMaxFromAirportTable("Longitude") - DataBaseManager.Instance.GetMinFromAirportTable("Longitude"); 

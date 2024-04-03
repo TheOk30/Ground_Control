@@ -7,32 +7,48 @@ using static UnityEditor.Experimental.GraphView.Port;
 
 namespace Assets.Scripts.DataStructures
 {
+    /// <summary>
+    /// Generic Heap Class to create a priority Queue
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class MinHeap<T> where T : IComparable<T>
     {
+        //The heap is implemented by a list
         private List<T> heap;
+
+        //Size of the heap
         private int size;
 
+        //Constructor for the Heap
         public MinHeap()
         {
             this.size = 0;
             this.heap = new List<T>();
         }
 
+        //Get the parent node
         private int Parent(int i)
         {
             return (i - 1) / 2;
         }
 
+        //Get the left child
         private int LeftChild(int i)
         {
             return 2 * i + 1;
         }
 
+        //Get tje right child
         private int RightChild(int i)
         {
             return 2 * i + 2;
         }
 
+        /// <summary>
+        /// Build Heap from list
+        /// Time Complexity: O(n)
+        /// </summary>
+        /// <param name="values"></param>
         public void BuildHeap(List<T> values)
         {
             heap.Clear();
@@ -46,7 +62,11 @@ namespace Assets.Scripts.DataStructures
             }
         }
 
-        // Time Complexity: O(log n)
+        /// <summary>
+        /// Heapify up the heap 
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <param name="index"></param>
         private void HeapifyUp(int index)
         {
             while (index > 0 && heap[index].CompareTo(heap[Parent(index)]) < 0)
@@ -56,7 +76,11 @@ namespace Assets.Scripts.DataStructures
             }
         }
 
-        // Time Complexity: O(log n)
+        /// <summary>
+        /// Heapify down the heap 
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <param name="index"></param>
         private void HeapifyDown(int index)
         {
             int smallest = index;
@@ -76,7 +100,11 @@ namespace Assets.Scripts.DataStructures
             }
         }
 
-        // Time Complexity: O(log n)
+        /// <summary>
+        /// Insert Element to the heap 
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <param name="key"></param>
         public void Insert(T key)
         { 
             heap.Add(key);
@@ -84,7 +112,12 @@ namespace Assets.Scripts.DataStructures
             HeapifyUp(size - 1);
         }
 
-        // Time Complexity: O(log n)
+        /// <summary>
+        /// Extract the min value from the heap
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public T ExtractMin()
         {
             if (size == 0)
@@ -98,7 +131,12 @@ namespace Assets.Scripts.DataStructures
             return min;
         }
 
-        // Time Complexity: O(1)
+        /// <summary>
+        /// // Method to calculate the parent index of a given index
+        /// Time Complexity: O(1)
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public T GetMin()
         {
             if (size == 0)
@@ -107,25 +145,42 @@ namespace Assets.Scripts.DataStructures
             return heap[0];
         }
 
-        // Time Complexity: O(1)
+        /// <summary>
+        /// Method to calculate the left child index of a given index
+        /// Time Complexity: O(1)
+        /// </summary>
+        /// <returns></returns>
         public bool IsEmpty()
         {
             return this.size == 0;
         }
-        
 
-        // Time Complexity: O(1)
+        /// <summary>
+        ///  Method to calculate the right child index of a given index
+        ///  Time Complexity: O(1)
+        /// </summary>
+        /// <returns></returns>
         public int GetSize()
         {
             return this.size;
         } 
 
+        /// <summary>
+        /// Return the Heap
+        /// </summary>
+        /// <returns></returns>
         public List<T> GetHeap()
         {
             return this.heap;
         }
 
-        // Time Complexity: O(log n)
+        /// <summary>
+        /// Swap between two elements in heap
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <param name="index1"></param>
+        /// <param name="index2"></param>
+        // 
         private void Swap(int index1, int index2)
         {
             T temp = heap[index1];
@@ -133,6 +188,10 @@ namespace Assets.Scripts.DataStructures
             heap[index2] = temp;
         }
 
+        /// <summary>
+        /// Get the list in a sorted fashion
+        /// </summary>
+        /// <returns></returns>
         public List<T> GetSortedWithoutModifyingHeap()
         {
             // Create a copy of the heap

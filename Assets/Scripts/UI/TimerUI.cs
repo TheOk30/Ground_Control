@@ -78,7 +78,7 @@ public class Timer : MonoBehaviour
         List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
         foreach (Flight flight in flightsList)
         { 
-            if (flight.GetProblem().HasProblem(time))
+            if (flight.DidFlightTakeoff() && flight.GetProblem().HasProblem(time))
             {
                 print(flight.ToString());
                 print(flight.GetProblem().GetIssue().GetName().ToString());
@@ -90,6 +90,11 @@ public class Timer : MonoBehaviour
                 }
 
                 solver.SolveFlightIssue(flight);
+            }
+
+            if(!flight.DidFlightTakeoff() && flight.GetTakeOffTime() ==  time) 
+            {
+                flight.FlightTookOff();
             }
         }
     }

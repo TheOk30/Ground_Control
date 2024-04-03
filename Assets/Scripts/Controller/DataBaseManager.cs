@@ -36,6 +36,7 @@ public class DataBaseManager : MonoBehaviour
 
     /// <summary>
     /// Inset the extracted airport info to the database
+    /// Function used for populating the database
     /// </summary>
     /// <param name="id"></param>
     /// <param name="name"></param>
@@ -92,6 +93,7 @@ public class DataBaseManager : MonoBehaviour
 
     /// <summary>
     /// Get all the elements of a list matching the id
+    /// Generic Function
     /// </summary>
     /// <param name="elementID"></param>
     /// <param name="itemSelected"></param>
@@ -229,7 +231,7 @@ public class DataBaseManager : MonoBehaviour
             try
             {
                 if (dataReader.GetString(5) != null)
-                    city = dataReader.GetString(6);
+                    city = dataReader.GetString(5);
             }
 
             catch (InvalidCastException)
@@ -237,8 +239,19 @@ public class DataBaseManager : MonoBehaviour
                 city = " ";
             }
 
-            code = dataReader.GetString(7);
-            runwayLength = dataReader.GetInt32(8);
+            code = dataReader.GetString(6);
+
+            try
+            {
+                if (dataReader.GetInt32(7) != null)
+                    runwayLength = dataReader.GetInt32(7);
+
+            }
+
+            catch (InvalidCastException)
+            {
+                runwayLength = 2000;
+            }
 
             airports.Add(new Airport(id, name, country, city, latitude, longitude, code, runwayLength));
         }
@@ -253,7 +266,7 @@ public class DataBaseManager : MonoBehaviour
     /// Get all the info for a certain airport with a given id
     /// </summary>
     /// <param name="id"></param>
-    /// <returns></returns>
+    /// <returns> Returns an airport ObJect for the id provided</returns>
     public Airport GetAllAirportInfo(int id)
     {
         string name = "";
@@ -290,15 +303,30 @@ public class DataBaseManager : MonoBehaviour
             }
 
             code = dataReader.GetString(5);
-            runwayLength = dataReader.GetInt32(6);
 
+            try
+            {
+                if (dataReader.GetInt32(6) != null)
+                    runwayLength = dataReader.GetInt32(6);
+            }
+
+            catch (InvalidCastException)
+            {
+                runwayLength = 2000;
+            }
         }
 
         dbConnection.Close();
 
         return new Airport(id, name, country, city, latitude, longitude, code, runwayLength);
     }
-
+    
+    /// <summary>
+    /// Get all the available planes that belong to the airline 
+    /// with the provided airlineID
+    /// </summary>
+    /// <param name="airlineID"></param>
+    /// <returns>A List of all the planes that are owned by the airline</returns>
     public List<PlaneQuantityManager> GetAirlineToPlaneInfo(int airlineID)
     {
         List<PlaneQuantityManager> planes = new List<PlaneQuantityManager>();
@@ -325,43 +353,12 @@ public class DataBaseManager : MonoBehaviour
         return planes;
     }
 
+   
     /// <summary>
-    /// Get all the info for a certain plane with a given id
+    /// Get All the informarmation of the Airline for the id provided
     /// </summary>
     /// <param name="id"></param>
-    /// <returns></returns>
-    //public Assets.Plane GetAllPlanesInfo(int id)
-    //{
-    //    string name = "";
-    //    int FuelCapacity = 0;
-    //    int FuelDropRate = 0;
-    //    int AvrSpeed = 0;
-    //    int MaxSpeed = 0;
-    //    int MaxRange = 0;
-
-    //    IDbConnection dbConnection = CreateAndOpenDatabase();
-    //    IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-    //    string idForDB = '"' + id.ToString() + '"';
-
-    //    dbCommandReadValues.CommandText = "SELECT Name, FuelCapacity, AvrSpeed, FuelDropRate, MaxRange, MaxSpeed FROM PlanesTable WHERE ID =" + idForDB + ';';
-    //    IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-
-
-    //    while (dataReader.Read())
-    //    {
-    //        name = dataReader.GetString(0);
-    //        FuelCapacity = dataReader.GetInt32(1);
-    //        AvrSpeed = dataReader.GetInt32(2);
-    //        FuelDropRate = dataReader.GetInt32(3);
-    //        MaxRange = dataReader.GetInt32(4);
-    //        MaxSpeed = dataReader.GetInt32(5);
-    //    }
-
-    //    dbConnection.Close();
-
-    //    return new Assets.Plane(id, name, FuelCapacity, AvrSpeed, MaxSpeed, FuelDropRate, MaxRange);
-    //}
-
+    /// <returns>An airline object containing all the necessery info for the airline</returns>
     public Airline GetAllAirlineInfo(int id)
     {
         string name = "";
@@ -389,6 +386,13 @@ public class DataBaseManager : MonoBehaviour
         return new Airline(id, name, AirlineCode, planes, HomeAirport);
     }
 
+    /// <summary>
+    /// Select Random Airport From The Database for the Flight Schedule
+    /// Used to find the other airport for creating the flight
+    /// </summary>
+    /// <param name="AirlineId"></param>
+    /// <param name="MainAirportID"></param>
+    /// <returns>id of the random airport</returns>
     public int SelectRandomAirportIdFromTable(int AirlineId, int MainAirportID)
     {
         int returnedId=0;
@@ -409,6 +413,12 @@ public class DataBaseManager : MonoBehaviour
         return returnedId;
     }
 
+    /// <summary>
+    /// Get All the info of an Issue By the Id.
+    /// Used to create the problem object an Issue has been found in the flight
+    /// </summary>
+    /// <param name="IssueId"></param>
+    /// <returns>FlightIssues Object</returns>
     public FlightIssues GetIssueInfo(int IssueId)
     {
         string IssueCode = "";
@@ -455,7 +465,7 @@ public class DataBaseManager : MonoBehaviour
         string AirlineIdForDB = '"' + AirlineId.ToString() + '"';
         string rangeIDForDB = '"' + range.ToString() + '"';
 
-        string command = "SELECT PlanesTable.Name, PlanesTable.FuelCapacity, PlanesTable.AvrSpeed, PlanesTable.FuelDropRate, PlanesTable.MaxRange, PlanesTable.MaxSpeed, PlanesTable.RunwayGrade";
+        string command = "SELECT PlanesTable.Name, PlanesTable.FuelCapacity, PlanesTable.AvrSpeed, PlanesTable.FuelDropRate, PlanesTable.MaxRange, PlanesTable.MaxSpeed, PlanesTable.RunwayGrade ";
         command += "FROM PlanesTable, AirlinesToPlanesManager ";
         command += "WHERE " + rangeIDForDB + " <= MaxRange AND " + AirlineIdForDB + " = AirlinesToPlanesManager.AirlineID AND AirlinesToPlanesManager.PlanesID = PlanesTable.ID ORDER BY RANDOM() LIMIT 1;";
         dbCommandReadValues.CommandText = command;

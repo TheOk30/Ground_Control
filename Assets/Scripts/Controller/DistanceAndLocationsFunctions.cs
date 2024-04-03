@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets
 {
     abstract class DistanceAndLocationsFunctions
     {
-        public const int EarthRadius = 6371;
+        public const double EarthRadius = 6371.0;
 
         /// <summary>
         /// Get the angular distance between two coordinates of the Earth
@@ -37,6 +39,12 @@ namespace Assets
             return (int)(rad * c);
         }
 
+        /// <summary>
+        /// Get the angular distance between two coordinates of the Earth
+        /// </summary>
+        /// <param name="local1"></param>
+        /// <param name="local2"></param>
+        /// <returns></returns>
         public static int DistanceBetweenCoordinates(Location local1, Location local2)
         {
             double lat1 = local1.GetLatitude();
@@ -61,66 +69,91 @@ namespace Assets
             return (int)(rad * c);
         }
 
+        /// <summary>
+        /// Find the bearing anlge between two coordinates
+        /// used to find a coordinate with just distanced travled and 
+        /// starting coordinate
+        /// </summary>
+        /// <param name="lat1"></param>
+        /// <param name="lon1"></param>
+        /// <param name="lat2"></param>
+        /// <param name="lon2"></param>
+        /// <returns></returns>
         public static double BearingAngle(double lat1, double lon1, double lat2, double lon2)
         {
-            double x = Math.Cos(DegreesToRadians(lat1)) * Math.Sin(DegreesToRadians(lat2)) - Math.Sin(DegreesToRadians(lat1))
-                       * Math.Cos(DegreesToRadians(lat2)) * Math.Cos(DegreesToRadians(lon2 - lon1));
-            double y = Math.Sin(DegreesToRadians(lon2 - lon1)) * Math.Cos(DegreesToRadians(lat2));
-
-            return (Math.Atan2(y, x) + Math.PI * 2) % (Math.PI * 2);
+            double y = Math.Sin(lon2 - lon1) * Math.Cos(lat2);
+            double x = Math.Cos(lat1) * Math.Sin(lat2) - Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(lon2 - lon1);
+            double bearing = Math.Atan2(y, x);
+            return (bearing + 2 * Math.PI) % (2 * Math.PI);
         }
 
+        /// <summary>
+        /// Convert angle From degrees to radians
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         public static double DegreesToRadians(double angle)
         {
-            return angle * Math.PI / 180.0d;
+            return angle * Math.PI / 180.0;
         }
 
-        public static Location GetCoorWithBearingAndDistance(double lat1, double lon1, double bearingAngle, int distanceTraveled)
+        /// <summary>
+        /// Convert from radians to degrees
+        /// </summary>
+        /// <param name="radians"></param>
+        /// <returns></returns>
+        public static double RadiansToDegrees(double radians)
         {
-            //bearing angle 
-            double rad = bearingAngle;
-
-            //angDist = distance/radius
-            double angDist = distanceTraveled / EarthRadius;
-
-            double latitude = DegreesToRadians(lat1);
-            double longitude = DegreesToRadians(lon1);
-
-
-            double lat = Math.Asin(Math.Sin(latitude) * Math.Cos(angDist) + Math.Cos(latitude) * Math.Sin(angDist) * Math.Cos(rad));
-
-            double forAtana = Math.Sin(rad) * Math.Sin(angDist) * Math.Cos(latitude);
-            double forAtanb = Math.Cos(angDist) - Math.Sin(latitude) * Math.Sin(lat);
-
-            double lon = longitude + Math.Atan2(forAtana, forAtanb);
-            double finalLat = lat * 180 / Math.PI;
-            double finalLon = lon * 180 / Math.PI;
-
-            return new Location(finalLat, finalLon);
+            return radians * 180.0 / Math.PI;
         }
 
-        public static Location GetCoorWithBearingAndDistance(double lat1, double lon1, double lat2, double lon2, int distanceTraveled)
+        /// <summary>
+        /// Find the Current Coordinate Of the plane with the starting location
+        /// Distance from the Starting Location and bearing angle
+        /// </summary>
+        /// <param name="departureLatitude"></param>
+        /// <param name="departureLongitude"></param>
+        /// <param name="arrivalLatitude"></param>
+        /// <param name="arrivalLongitude"></param>
+        /// <param name="distanceFromDeparture"></param>
+        /// <returns></returns>
+        public static Location GetCoorWithBearingAndDistance(double departureLatitude, double departureLongitude,double arrivalLatitude, double arrivalLongitude,
+            double distanceFromDeparture)
         {
-            //bearing angle 
-            double rad = BearingAngle(lat1, lon1, lat2, lon2);
+            // Convert degrees to radians
+            departureLatitude = DegreesToRadians(departureLatitude);
+            departureLongitude = DegreesToRadians(departureLongitude);
+            arrivalLatitude = DegreesToRadians(arrivalLatitude);
+            arrivalLongitude = DegreesToRadians(arrivalLongitude);
 
-            //angDist = distance/radius
-            double angDist = distanceTraveled / EarthRadius;
+            // Calculate the angular distance
+            double angularDistance = distanceFromDeparture / EarthRadius;
 
-            double latitude = DegreesToRadians(lat1);
-            double longitude = DegreesToRadians(lon1);
+            // Calculate the bearing angle between the two points
+            double brng = BearingAngle(departureLatitude, departureLongitude, arrivalLatitude, arrivalLongitude);
 
+            // Convert distance traveled to angular distance (in radians)
+            double d = distanceFromDeparture / EarthRadius; // Earth radius in kilometers
 
-            double lat = Math.Asin(Math.Sin(latitude) * Math.Cos(angDist) + Math.Cos(latitude) * Math.Sin(angDist) * Math.Cos(rad));
+            // Calculate the new latitude using the Vincenty formula
+            double lat2 = Math.Asin(Math.Sin(departureLatitude) * Math.Cos(d) +
+                          Math.Cos(departureLatitude) * Math.Sin(d) * Math.Cos(brng));
 
-            double forAtana = Math.Sin(rad) * Math.Sin(angDist) * Math.Cos(latitude);
-            double forAtanb = Math.Cos(angDist) - Math.Sin(latitude) * Math.Sin(lat);
+            // Calculate the new longitude using the Vincenty formula
+            double lon2 = departureLongitude + Math.Atan2(Math.Sin(brng) * Math.Sin(d) * Math.Cos(departureLatitude),
+                                               Math.Cos(d) - Math.Sin(departureLatitude) * Math.Sin(lat2));
 
-            double lon = longitude + Math.Atan2(forAtana, forAtanb);
-            double finalLat = lat * 180 / Math.PI;
-            double finalLon = lon * 180 / Math.PI;
+            // Convert the new latitude and longitude from radians to degrees
+            lat2 = RadiansToDegrees(lat2);
+            lon2 = RadiansToDegrees(lon2);
 
-            Location temp = new Location(finalLat, finalLon);
+            // Create a new Location object with the calculated coordinates
+            Location temp = new Location(lat2, lon2);
+
+            // Log the flight location for debugging purposes
+            UnityEngine.Debug.Log("flight location in function: " + temp);
+
+            // Return the calculated location
             return temp;
         }
     }

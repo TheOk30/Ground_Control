@@ -22,18 +22,28 @@ namespace Assets.Scripts.Controller
         //Time speeder for the simulation
         public const int TimeSpeeder = 1000;
 
+        //Interval between flights for the flight schedule creator
         public const int TimeBetweenFlightsOnSchedule = 5;
 
+        //Single engine minimum output can be reduced by 5%
         public const int SingleEngineRateMin = 5;
+
+        //Single engine maximum output can be reduced by 45%
         public const int SingleEngineRateMax = 46;
 
+        //Double engine minimum output can be reduced by 10%
         public const int DoubleEngineRateMin = 10;
+
+        //Double engine maximum output can be reduced by 90%
         public const int DoubleEngineRateMax = 91;
 
+        //Single Engine Failure Speed reduce flight speed to 80%
         public const int SingleEngineFailureSpeed = 80;
 
+        //Double Engine Failure Speed reduce flight speed to 50%
         public const int DoubleEngineFailureSpeed = 50;
 
+        //Fuel Burn Rate increase by 17%
         public const float fuelBurnRateDiffCruiseToMax = 1.17f;
 
         //The minimum Fuel percentage allowed when landing is 45 minutes of fuel so 75%
@@ -43,6 +53,7 @@ namespace Assets.Scripts.Controller
         //Random Object for the entire system
         public static System.Random rnd = new System.Random();
 
+        //Dictionary for max radius from originial airport to start looking for an alternative landing location
         public static Dictionary<int, int> distanceToEmergencyLanding = new Dictionary<int, int>
         {
             { 2, -1 }, // Grade 2 - no need for landing

@@ -29,22 +29,8 @@ namespace Assets
         private int runway;
 
         private readonly bool isLandingAtMain;
-        private bool isReady;
         private bool landed;
-        private bool isLanding;
-        private bool isLandingPermission;
         private bool isTakeoff;
-        private bool isTakeoffPermission;
-        private bool hasEmergency;
-        private bool isOnRunway;
-        private bool isOnRunwayPermission;
-        private bool isOnTaxiway;
-        private bool isOnTaxiPermission;
-        private bool isDelayed;
-        private bool isDelayInternal;
-        private bool isDelayExternal;
-        private bool isCancled;
-        private bool planeInUse;
 
         public Flight(Airline airline, Plane plane, Airport departingAirport, Airport arrivalAirport, DateTime estimatedTakeoffTime, int runway)
         {
@@ -64,19 +50,8 @@ namespace Assets
 
             this.distanceTraveled = 0;
             this.landed = false;
-            this.isLanding = false;
-            this.isLandingPermission = false;
             this.isTakeoff = false;
-            this.isTakeoffPermission = false;
-            this.hasEmergency = false;
-            this.isOnRunway = false;
-            this.isOnRunwayPermission = false;
-            this.isOnTaxiway = false;
-            this.isOnTaxiPermission = false;
-            this.isDelayed = false;
-            this.isDelayInternal = false;
-            this.isDelayExternal = false;
-            this.isCancled = false;
+
 
             CreateFlightNumber();
             BindPlaneToFlight();
@@ -124,10 +99,26 @@ namespace Assets
             this.problem = problem;
         }
 
+        public int GetRunway()
+        {
+            return this.runway;
+        }
+
         private void EstimatedLandingTime()
         {
-            TimeSpan duration = TimeSpan.FromMinutes(this.flightDuration);
-            this.estimatedLandingTime = this.estimatedTakeoffTime.Add(duration);
+            try
+            {
+                this.flightDuration = Math.Abs(this.flightDuration);
+                TimeSpan duration = TimeSpan.FromMinutes(this.flightDuration);
+                this.estimatedLandingTime = this.estimatedTakeoffTime.Add(duration);
+            }
+
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.Log("flightDuration: " + this.flightDuration);
+            }
+            
         }
 
         public int GetTimeTraveledMin(DateTime currentTime)
@@ -136,11 +127,22 @@ namespace Assets
             return (int)Math.Round(timeElapsed.TotalMinutes);
         }
 
+        public bool DidFlightTakeoff()
+        {
+            return this.isTakeoff;
+        }
+
+        public void FlightTookOff()
+        {
+            this.isTakeoff = true;
+        }
+
         public int GetDistanceTraveled(DateTime currentTime)
         {
-            // Dividing by 60 to convert speed to minutes
-            double distanceTraveled = this.plane.GetAvrSpeed() * (GetTimeTraveledMin(currentTime) / 60); 
-            return (int)Math.Round(distanceTraveled);
+            // Dividing by 60.0 ensures floating-point division
+            double distanceTraveled = this.plane.GetAvrSpeed() * (GetTimeTraveledMin(currentTime) / 60.0);
+            this.distanceTraveled =  (int)Math.Round(distanceTraveled);
+            return this.distanceTraveled;
         }
 
         public bool IsLandingOrTakeOffFlight()
@@ -186,15 +188,6 @@ namespace Assets
         public int GetFlightDurationMinutes()
         {
             return this.flightDuration;
-        }
-
-        /// <summary>
-        /// returns the flight duration in hours
-        /// </summary>
-        /// <returns></returns>
-        public int GetFlightDurationHours()
-        {
-            return this.flightDuration/60;
         }
 
         public DateTime GetEstimatedLanding()
@@ -245,7 +238,12 @@ namespace Assets
 
         public Airport GetArrivalAirport()
         {
-            return this.GetArrivalAirport();
+            return this.arrivalAirport;
+        }
+
+        public Airport GetDepartingAirport()
+        {
+            return this.departingAirport;
         }
 
         public DateTime GetTimeToCompare()
