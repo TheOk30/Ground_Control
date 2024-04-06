@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DataBaseManager" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAIACAEAAEAAAQAQgAAAogAgAQAAAAQgIAAAAAAEI=</HashCode>
+      <FileName>Assets\Scripts\Controller\DataBaseManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExtractInformationToDB" Collapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAIAAAAAEACAAAAAAAAIAQAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Controller\ExtractInformationToDB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BackgroundStretchHandler" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UI\BackgroundStretchHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FlightButtonExpansion" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UI\FlightButtonExpansion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FlightScheduleUI" Collapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAKAAAAAAABAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UI\FlightScheduleUI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Timer" Collapsed="true">
+    <Position X="8.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAEAACAAgABAAAAAEAAAAIAACAACAAAIAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\UI\TimerUI.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.DistanceAndLocationsFunctions" Collapsed="true">
+    <Position X="10" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIIAAAAAAAAAAAAAAAAAAAAAAEAAAAAAACAAAgAA=</HashCode>
+      <FileName>Assets\Scripts\Controller\DistanceAndLocationsFunctions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Airline" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIgAgABBAACABAEAAAAAABAAAACBAAgACAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\Airline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Airport" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAgIAAAJACAIAAAECAAIACgAIACKAIAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\Airport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.AirportManager" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAQAIQAAAAAAAAECAAAAAAAAIAAAQAAAAAACIAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\AirportManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Flight" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AjA4CQAAFBhgAJYEBEgACEwaZAAMCoAhBAAEIUAEACA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\Flight.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Assets.Location" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAIAAAAEAAAAAAAACAAAAAAAACAAAABAAAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\Location.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Plane" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AKgQAAgAAAAAAASIAAAAQAAIIAAAABAAAYCQgOGIEAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\Plane.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.PlaneQuantityManager" Collapsed="true">
+    <Position X="8.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAACgAAQAACAECAAAAAAAACAAACAACAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\FlightModels\PlaneQuantityManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.FlightIssues" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAIAAEAAAAAQAAAAKAFgA=</HashCode>
+      <FileName>Assets\Scripts\Modles\IssuesController\FlightIssues.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.FlightSchedule" Collapsed="true">
+    <Position X="10" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQACAAUIAAEAAAAFEAAAAAAIAAAAAAAARAAgAQAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Modles\Scheduler\FlightSchedule.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Controller.SimulationController" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACEEAACEAAAAAAAAAAAAwBAAIIABAAAAAAAAANAAAA=</HashCode>
+      <FileName>Assets\Scripts\Controller\SimulationController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.DataStructures.MinHeap&lt;T&gt;" Collapsed="true">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAEgAAAAAAASBAIAAQAwAAQABAAAAAAAAgBAAiAA=</HashCode>
+      <FileName>Assets\Scripts\DataStructures\MinHeap.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.SpatialHashingLocationIndex" Collapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAACAAAAAAAABAAAAAAIAAAAAAAAQgAACAAEAAA=</HashCode>
+      <FileName>Assets\Scripts\DataStructures\SpatialHashingLocationIndex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.Modles.IssuesControler.ProblemCreator" Collapsed="true">
+    <Position X="10" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MAAAAAAABAEgUBAIBAAAAAQACABAAAAAEAIAAAQBAAE=</HashCode>
+      <FileName>Assets\Scripts\Modles\IssuesController\ProblemCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Assets.Scripts.SolverController.Solver" Collapsed="true">
+    <Position X="4.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAACEECAABCQAAAAAAKChAABAQEUYCAAIEAAAA=</HashCode>
+      <FileName>Assets\Scripts\SolverController\Solver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
