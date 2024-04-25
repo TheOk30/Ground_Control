@@ -320,39 +320,6 @@ public class DataBaseManager : MonoBehaviour
 
         return new Airport(id, name, country, city, latitude, longitude, code, runwayLength);
     }
-    
-    /// <summary>
-    /// Get all the available planes that belong to the airline 
-    /// with the provided airlineID
-    /// </summary>
-    /// <param name="airlineID"></param>
-    /// <returns>A List of all the planes that are owned by the airline</returns>
-    public List<PlaneQuantityManager> GetAirlineToPlaneInfo(int airlineID)
-    {
-        List<PlaneQuantityManager> planes = new List<PlaneQuantityManager>();
-        int planeId = 0;
-        int quantity = 0;
-
-        IDbConnection dbConnection = CreateAndOpenDatabase();
-        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        string idForDB = '"' + airlineID.ToString() + '"';
-
-        dbCommandReadValues.CommandText = "SELECT PlanesID, Quantity FROM AirlinesToPlanesManager WHERE AirlineID =" + idForDB + ';';
-        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-
-
-        while (dataReader.Read())
-        {
-            planeId = dataReader.GetInt32(0);
-            quantity = dataReader.GetInt32(1);
-            planes.Add(new PlaneQuantityManager(airlineID, planeId, quantity));
-        }
-
-        dbConnection.Close();
-
-        return planes;
-    }
-
    
     /// <summary>
     /// Get All the informarmation of the Airline for the id provided
@@ -364,7 +331,6 @@ public class DataBaseManager : MonoBehaviour
         string name = "";
         string AirlineCode = "";
         int HomeAirport = 0;
-        List<PlaneQuantityManager> planes = new List<PlaneQuantityManager>();
 
         IDbConnection dbConnection = CreateAndOpenDatabase();
         IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
@@ -382,8 +348,7 @@ public class DataBaseManager : MonoBehaviour
 
         dbConnection.Close();
 
-        planes = GetAirlineToPlaneInfo(id);
-        return new Airline(id, name, AirlineCode, planes, HomeAirport);
+        return new Airline(id, name, AirlineCode, HomeAirport);
     }
 
     /// <summary>
@@ -450,6 +415,40 @@ public class DataBaseManager : MonoBehaviour
         return new FlightIssues(IssueId, IssueCode, IssueName, Description, Grade);
     }
 
+    /// <summary>
+    /// Get the max range of the airline
+    /// </summary>
+    /// <param name="AirlineId"></param>
+    /// <returns></returns>
+    public int GetMaxFlightDistanceForAirline(int AirlineId)
+    {
+        int maxDistance = 0;
+        IDbConnection dbConnection = CreateAndOpenDatabase();
+        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
+        string AirlineIdForDB = '"' + AirlineId.ToString() + '"';
+
+        string command = "SELECT Max(MaxRange) ";
+        command += "FROM PlanesTable Join AirlinesToPlanesManager ON AirlinesToPlanesManager.PlanesID = PlanesTable.ID ";
+        command += "WHERE " + AirlineIdForDB + " = AirlinesToPlanesManager.AirlineID;";
+        dbCommandReadValues.CommandText = command;
+
+        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+
+        while (dataReader.Read())
+        {
+            maxDistance = dataReader.GetInt32(0);
+        }
+
+        dbConnection.Close();
+        return maxDistance;
+    }
+   
+    /// <summary>
+    /// Creates a random plane for the flight based on the range of the flight and airline
+    /// </summary>
+    /// <param name="AirlineId"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
     public Assets.Plane GetRandomPlane(int AirlineId, int range)
     {
         string name = "";
@@ -466,8 +465,8 @@ public class DataBaseManager : MonoBehaviour
         string rangeIDForDB = '"' + range.ToString() + '"';
 
         string command = "SELECT PlanesTable.Name, PlanesTable.FuelCapacity, PlanesTable.AvrSpeed, PlanesTable.FuelDropRate, PlanesTable.MaxRange, PlanesTable.MaxSpeed, PlanesTable.RunwayGrade ";
-        command += "FROM PlanesTable, AirlinesToPlanesManager ";
-        command += "WHERE " + rangeIDForDB + " <= MaxRange AND " + AirlineIdForDB + " = AirlinesToPlanesManager.AirlineID AND AirlinesToPlanesManager.PlanesID = PlanesTable.ID ORDER BY RANDOM() LIMIT 1;";
+        command += "FROM PlanesTable Join AirlinesToPlanesManager ON AirlinesToPlanesManager.PlanesID = PlanesTable.ID ";
+        command += "WHERE " + rangeIDForDB + " <= MaxRange AND " + AirlineIdForDB + " = AirlinesToPlanesManager.AirlineID ORDER BY RANDOM() LIMIT 1;";
         dbCommandReadValues.CommandText = command;
 
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();

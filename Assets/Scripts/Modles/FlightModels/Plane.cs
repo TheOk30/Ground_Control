@@ -64,7 +64,7 @@ namespace Assets
             int newFuelDropRate = (int)(this.fuelDropRate * SimulationController.fuelBurnRateDiffCruiseToMax);
             int distanceLeft = this.flight.GetDistanceToArrivalAirport(currentTime);
 
-            if (currentFuelLevel - minFuelPossible <= 0)
+            if (this.currentFuelLevel - minFuelPossible <= 0)
             {
                 UnityEngine.Debug.Log("Error in Fuel LEVEL");
                 UnityEngine.Debug.Log(this.DBplaneID + " " + this.planeName);
@@ -75,6 +75,9 @@ namespace Assets
 
             if (newSpeed <= this.avrSpeed)
                 return -1;
+
+            else if(newSpeed <0 )
+                return avrSpeed;
 
             return Math.Min(newSpeed, this.maxSpeed);
         }
@@ -131,6 +134,17 @@ namespace Assets
             {
                 this.flight = flight;
             }
+        }
+
+        public int GetMaxDistanceAvailable(DateTime currentTime)
+        {
+            double distance = ((double)GetCurrentFuelLevel(currentTime) / this.fuelDropRate) * this.currentSpeed;
+            return (int)distance;
+        }
+
+        public override string ToString()
+        {
+            return this.planeName;
         }
     }
 }

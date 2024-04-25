@@ -58,24 +58,36 @@ namespace Assets.Scripts
 
         /// <summary>
         /// Find Closest Airport to the current location
+        /// Time Complexity: O(n)
         /// </summary>
         /// <param name="queryLocation"></param>
         /// <param name="grade"></param>
         /// <returns></returns>
-        public Location FindClosestLocations(Location queryLocation, int grade)
+        public Location FindClosestLocations(Location queryLocation, int grade, double minDistance)
         {
             int queryHash = ComputeHash(queryLocation.GetLatitude(), queryLocation.GetLongitude());
             List<Location> nearbyLocations = new List<Location>();
 
-            for (int i = queryHash - 1; i <= queryHash + 1; i++)
+            Location optimumRange = DistanceAndLocationsFunctions.OptimumSearchRange(queryLocation);
+
+            // Expand the search area by adjusting the search range based on latitude and longitude degrees
+            int searchRangeLatitude = (int)Math.Ceiling(optimumRange.GetLatitude());
+            int searchRangeLongitude = (int)Math.Ceiling(optimumRange.GetLongitude());
+
+            //This loop adds the nearby locations to the list
+            for (int i = queryHash - searchRangeLatitude; i <= queryHash + searchRangeLatitude; i++)
             {
-                if (spatialHash.ContainsKey(i))
-                    nearbyLocations.AddRange(spatialHash[i]);
+                for (int j = queryHash - searchRangeLongitude; j <= queryHash + searchRangeLongitude; j++)
+                {
+                    if (spatialHash.ContainsKey(i))
+                        nearbyLocations.AddRange(spatialHash[i]);
+                }
             }
 
             Location closestLocation = null;
-            double minDistance = double.MaxValue;
 
+            //Time complexity: O(n)
+            //this loop will run for the number of airports in the nearbyLocations
             foreach (Location location in nearbyLocations)
             {
                 if(location is Airport && ((Airport)(location)).GetRunwayGrade() >= grade)
@@ -103,12 +115,7 @@ namespace Assets.Scripts
         {
             int x = (int)(latitude / gridSize);
             int y = (int)(longitude / gridSize);
-
-            // Use Tuple.Create to create a tuple with latitude and longitude
-            var tuple = Tuple.Create(x, y);
-
-            // Get the hash code of the tuple
-            return tuple.GetHashCode();
+            return x.GetHashCode() ^ y.GetHashCode();
         }
 
         /// <summary>

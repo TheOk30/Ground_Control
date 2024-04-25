@@ -156,5 +156,28 @@ namespace Assets
             // Return the calculated location
             return temp;
         }
+
+        public static Location OptimumSearchRange(Location queryLocation)
+        {
+            // Calculate the equivalent latitude and longitude degrees for the search radius (e.g., 10 kilometers)
+            const double EarthRadiusM = 6371000; // Earth radius in meters
+            const double SearchRadius = 10000; // Search radius in meters (10 kilometers)
+
+            // Calculate the distance corresponding to one degree of latitude at the equator
+            double latitudeDegreeDistance = 2 * Math.PI * EarthRadiusM / 360;
+
+            // Calculate the distance corresponding to one degree of longitude at the equator
+            double longitudeDegreeDistance = latitudeDegreeDistance * Math.Cos(Math.PI / 180 * queryLocation.GetLatitude());
+
+            // Calculate the equivalent number of degrees for the search radius
+            double latitudeDegrees = SearchRadius / latitudeDegreeDistance;
+            double longitudeDegrees = SearchRadius / longitudeDegreeDistance;
+
+            // Expand the search area by adjusting the search range based on latitude and longitude degrees
+            int searchRangeLatitude = (int)Math.Ceiling(latitudeDegrees);
+            int searchRangeLongitude = (int)Math.Ceiling(longitudeDegrees);
+
+            return new Location(searchRangeLatitude, searchRangeLongitude);
+        }
     }
 }

@@ -386,7 +386,6 @@
 "Assets/Scripts/Modles/FlightModels/Flight.cs"
 "Assets/Scripts/Modles/FlightModels/Location.cs"
 "Assets/Scripts/Modles/FlightModels/Plane.cs"
-"Assets/Scripts/Modles/FlightModels/PlaneQuantityManager.cs"
 "Assets/Scripts/Modles/IssuesController/FlightIssues.cs"
 "Assets/Scripts/Modles/IssuesController/ProblemCreator.cs"
 "Assets/Scripts/Modles/Scheduler/FlightSchedule.cs"

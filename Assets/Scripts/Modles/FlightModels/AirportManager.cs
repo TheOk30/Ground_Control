@@ -21,13 +21,18 @@ namespace Assets
 
         private readonly Airport airport;
         private FlightSchedule flightSchedule;
+        private List<Flight> removedFligths;
+        private List<Flight> landedFligths;
         private int flightIntervals;
+        private int numReorders;
         private int numRunways;
 
         private AirportManager(Airport airport, int flightIntervals, int numRunways)
         {
             this.airport = airport;
             this.flightSchedule = null;
+            this.removedFligths = new List<Flight>();
+            this.landedFligths = new List<Flight>();
             this.flightIntervals = flightIntervals;
             this.numRunways = numRunways;
         }
@@ -43,7 +48,7 @@ namespace Assets
             DateTime startScheduleTime = DateTime.UtcNow.Date.AddMinutes(flightStartTime + this.flightIntervals);
             this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport, this.numRunways);
             this.flightSchedule.AreValuesBetweenNeighborsUnderThreshold();
-            AddProblemsToFligths();
+            AddProblemsToFlights();
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace Assets
         /// This method allows for encapsulation and lets the problem creator act completely
         /// As a "BlackBox" and no flight can know if it has a problem or not
         /// </summary>
-        private void AddProblemsToFligths()
+        private void AddProblemsToFlights()
         {
             foreach (Flight flight in this.flightSchedule.GetFlights().GetHeap())
             {
@@ -67,6 +72,41 @@ namespace Assets
         public FlightSchedule GetFlightSchedule()
         {
             return this.flightSchedule;
+        }
+
+        public void AddFlightToRemovedFlights(Flight flight)
+        {
+            this.removedFligths.Add(flight);
+        }
+
+        public void AddFlightToLandedFlights(Flight flight)
+        {
+            this.landedFligths.Add(flight);
+        }
+
+        public List<Flight> GetRemovedFlights()
+        {
+            return this.removedFligths;
+        }
+
+        public List<Flight> GetLandedFlights()
+        {
+            return this.landedFligths;
+        }
+
+        public int GetNumReorders()
+        {
+            return this.numReorders;
+        }
+
+        public void newReorder()
+        {
+            this.numReorders++;
+        }
+
+        public int GetNumRunways()
+        {
+            return this.numRunways;
         }
 
         public static AirportManager InitializeAirportManager(Airport airport, int flightIntervals, int numRunways)

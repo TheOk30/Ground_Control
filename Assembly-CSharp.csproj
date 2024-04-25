@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Modles\FlightModels\Location.cs" />
-    <Compile Include="Assets\Scripts\Modles\FlightModels\PlaneQuantityManager.cs" />
     <Compile Include="Assets\Scripts\UI\BackgroundStretchHandler.cs" />
     <Compile Include="Assets\Scripts\DataStructures\MinHeap.cs" />
     <Compile Include="Assets\Scripts\Controller\ExtractInformationToDB.cs" />

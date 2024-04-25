@@ -16,7 +16,6 @@ namespace Assets
         private double flightIntervals;
         private int numberOfDailyFlights;
         private Airport MainAirport;
-        public static int numberOfFlightsOnSchedule = 0;
         private static FlightSchedule Instance = null;
         private int numRunways;
 
@@ -58,12 +57,12 @@ namespace Assets
             Plane plane = null;
             Airline airline = null;
             Airport otherAirport = null;
-
             while (plane == null)
             {
                 //generate random airline
-                int rndAirlineIndex = SimulationController.rnd.Next(0, AirlineFlyingToCurrentAirport.Count);
+                int rndAirlineIndex = SimulationController.rnd.Next(1, AirlineFlyingToCurrentAirport.Count);
                 airline = DataBaseManager.Instance.GetAllAirlineInfo(rndAirlineIndex);
+                int maxDistanceForAirline = DataBaseManager.Instance.GetMaxFlightDistanceForAirline(rndAirlineIndex);
 
                 int otherAirportID = 0;
                 if (airline.GetHomeAirport() != 0 && airline.GetHomeAirport() != this.MainAirport.GetAirportID())
@@ -80,8 +79,11 @@ namespace Assets
 
                 int flightDistance = Airport.DistanceBetweenAirports(this.MainAirport, otherAirport);
 
-                plane = DataBaseManager.Instance.GetRandomPlane(airline.GetAirlineID(), flightDistance);
-                AirlineFlyingToCurrentAirport.Remove(rndAirlineIndex);
+                if (flightDistance < maxDistanceForAirline)
+                {
+                    plane = DataBaseManager.Instance.GetRandomPlane(airline.GetAirlineID(), flightDistance);
+                    AirlineFlyingToCurrentAirport.Remove(rndAirlineIndex);
+                }
             } 
 
             airline.BindPlaneToAirline(plane);
@@ -129,9 +131,9 @@ namespace Assets
             return date; 
         } 
 
-        public static int GetNumberOfFlightsOnSchedule()
+        public int GetNumberOfDailyFlights()
         {
-            return numberOfFlightsOnSchedule;
+            return this.numberOfDailyFlights;
         }
 
         public MinHeap<Flight> GetFlights()

@@ -37,7 +37,7 @@ namespace Assets
         /// <param name="airlineCode"></param>
         /// <param name="allPlanesList"></param>
         /// <param name="homeAirport"></param>
-        public Airline(int airlineID, string airlineName, string airlineCode, List<PlaneQuantityManager> allPlanesList, int homeAirport)
+        public Airline(int airlineID, string airlineName, string airlineCode, int homeAirport)
         {
             this.airlineID = airlineID;
             this.airlineName = airlineName;

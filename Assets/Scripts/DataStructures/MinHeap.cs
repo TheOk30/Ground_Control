@@ -54,7 +54,9 @@ namespace Assets.Scripts.DataStructures
             heap.Clear();
             heap.AddRange(values); // Copy values to heap (O(n))
 
-            // Start heapifying from the last non-leaf node down to the root
+            // Set the size of the heap
+            // The last non-leaf node is at index (n/2) - 1
+            this.size = values.Count;
             int lastNonLeafIndex = (this.size / 2) - 1;
             for (int i = lastNonLeafIndex; i >= 0; i--)
             {
@@ -67,7 +69,7 @@ namespace Assets.Scripts.DataStructures
         /// Time Complexity: O(log n)
         /// </summary>
         /// <param name="index"></param>
-        private void HeapifyUp(int index)
+        public void HeapifyUp(int index)
         {
             while (index > 0 && heap[index].CompareTo(heap[Parent(index)]) < 0)
             {
@@ -81,7 +83,7 @@ namespace Assets.Scripts.DataStructures
         /// Time Complexity: O(log n)
         /// </summary>
         /// <param name="index"></param>
-        private void HeapifyDown(int index)
+        public void HeapifyDown(int index)
         {
             int smallest = index;
             int left = LeftChild(index);
@@ -98,7 +100,7 @@ namespace Assets.Scripts.DataStructures
                 Swap(index, smallest);
                 HeapifyDown(smallest);
             }
-        }
+        }            
 
         /// <summary>
         /// Insert Element to the heap 
@@ -164,6 +166,26 @@ namespace Assets.Scripts.DataStructures
         {
             return this.size;
         } 
+
+        /// <summary>
+        /// Remove a node from the heap 
+        /// Time Complexity: O(log n)
+        /// </summary>
+        /// <param name="node"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void RemoveNode(T node)
+        {
+            int index = heap.IndexOf(node);
+            if (index == -1)
+            {
+                throw new InvalidOperationException("Node not found in heap");
+            }
+
+            heap[index] = heap[size - 1];
+            heap.RemoveAt(size - 1);
+            size--;
+            HeapifyDown(index);
+        }
 
         /// <summary>
         /// Return the Heap

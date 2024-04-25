@@ -14,7 +14,7 @@ namespace Assets.Scripts.Controller
     public static class SimulationController
     {
         //random(1,101) % 5 == 20% of a problem occuring
-        public const int percentageOfProblem = 5;
+        public const int percentageOfProblem = 2;
 
         //The earliest and latest time where a porblem can occur on a flight
         public const int First_LastProblemTimePossible = 20;
@@ -65,5 +65,24 @@ namespace Assets.Scripts.Controller
             { 9, 50 }, // Grade 9 - land in radius of 50
             { 10, 0 } // Grade 10 - land in radius of 0
         };
+
+        //Dictionary for max radius from originial airport to start looking for an alternative landing location
+        public static Dictionary<int, int> searchRadiusToLand = new Dictionary<int, int>
+        {
+            { 2, -1 }, // Grade 2 - no need for landing
+            { 4, -1 }, // Grade 4 - no need for landing
+            { 5, -1 }, // Grade 5 - no need for landing
+            { 6, 300 }, // Grade 6 - land in radius of 350
+            { 7, 350 }, // Grade 7 - land in radius of 150
+            { 8, 400 }, // Grade 8 - land in radius of 100
+            { 9, 500 }, // Grade 9 - land in radius of 50
+            { 10, 550 } // Grade 10 - land in radius of 0
+        };
+
+        //Expand the search for an alternative landing location
+        public static int RefineDistance = 30;
+
+        //kg fuel consumption per km
+        public static int fuelPerKm = 3;
     }
 }

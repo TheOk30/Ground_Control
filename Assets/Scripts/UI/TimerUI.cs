@@ -25,6 +25,7 @@ public class Timer : MonoBehaviour
         timerText.text = "";
         DateTime today = DateTime.Today;
         time = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
+
         StartCoroutine(UpdateTimeCoroutine());
         solver = Solver.InitializeSolver();
     }
@@ -32,22 +33,42 @@ public class Timer : MonoBehaviour
     // Coroutine to update time at fixed intervals
     IEnumerator UpdateTimeCoroutine()
     {
+        // While there are still flights in the schedule
+        // that haven't been handled yet, and the number
+        // of daily flights is greater than 0
         while (isRunning)
         {
-            // Accumulate time with multiplier
-            accumulatedTime += Time.deltaTime * this.timeSpeedMultiplier; 
-
-            while (accumulatedTime >= 1.0f)
+            // Check if AirportManager.Instance exists and flight schedule is available
+            if (AirportManager.Instance != null && AirportManager.Instance.GetFlightSchedule() != null)
             {
-                // Update timer display once per second
-                UpdateTimerDisplay(); 
-                accumulatedTime -= 1.0f;
+                // Check if the number of daily flights is greater than 0
+                if (AirportManager.Instance.GetFlightSchedule().GetNumberOfDailyFlights() > 0)
+                {
+                    // Accumulate time with multiplier
+                    accumulatedTime += Time.deltaTime * this.timeSpeedMultiplier;
+
+                    while (accumulatedTime >= 1.0f)
+                    {
+                        // Update timer display once per second
+                        UpdateTimerDisplay();
+                        accumulatedTime -= 1.0f;
+                    }
+                }
+
+                else
+                {
+                    // If there are no flights, stop the simulation
+                    isRunning = false;
+                }
             }
 
-            //returns the controls back to unity after the asynchronous function
+            // Return control back to Unity after the asynchronous function
             yield return null;
         }
+
+        Debug.Log("All Flights have been handled - Simulation Over");
     }
+
 
     // Update the timer display
     void UpdateTimerDisplay()
@@ -61,12 +82,6 @@ public class Timer : MonoBehaviour
         if (time.Second == 0)
         {
             CheckIfFlightsHaveIssues(time);
-        }
-
-        // The time is midnight (00:00:00)
-        if (time.TimeOfDay == TimeSpan.Zero)
-        {
-            ChangeFlightScheduleActivator(time);
         }
     }
 
@@ -96,11 +111,14 @@ public class Timer : MonoBehaviour
             {
                 flight.FlightTookOff();
             }
+
+            if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetLandingTime() == time)
+            {
+                flight.FlightLanded();
+                Debug.Log("Flight Landed");
+                AirportManager.Instance.GetFlightSchedule().GetFlights().RemoveNode(flight);
+                AirportManager.Instance.AddFlightToLandedFlights(flight);
+            }
         }
-    }
-     
-    private void ChangeFlightScheduleActivator(DateTime time)
-    {
-       //
     }
 }
