@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\DataStructures\MinHeap.cs" />
     <Compile Include="Assets\Scripts\Controller\ExtractInformationToDB.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesController\ProblemCreator.cs" />
+    <Compile Include="Assets\Scripts\UI\LevelTransition.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModels\Airline.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModels\AirportManager.cs" />
     <Compile Include="Assets\Scripts\SolverController\Solver.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Assets\Scripts\Modles\Scheduler\FlightSchedule.cs" />
     <Compile Include="Assets\Scripts\Controller\DistanceAndLocationsFunctions.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesController\FlightIssues.cs" />
+    <Compile Include="Assets\Scripts\UI\InputMainAirportInfo.cs" />
     <Compile Include="Assets\Scripts\UI\FlightButtonExpansion.cs" />
     <Compile Include="Assets\Scripts\DataStructures\SpatialHashingLocationIndex.cs" />
     <Compile Include="Assets\Scripts\Controller\DataBaseManager.cs" />

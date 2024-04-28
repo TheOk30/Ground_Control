@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Assets
 {
@@ -25,6 +26,7 @@ namespace Assets
             this.numberOfDailyFlights = (int)Math.Ceiling((24 - flightStartTime) * (60.0 / this.flightIntervals));
             this.flights = new MinHeap<Flight>();
             this.date = date;
+            Debug.Log("Creating Flight Schedule for " + date.ToString());
             this.MainAirport = MainAirport;
             this.numRunways = numRunways;
             CreateFlights();
@@ -57,6 +59,7 @@ namespace Assets
             Plane plane = null;
             Airline airline = null;
             Airport otherAirport = null;
+
             while (plane == null)
             {
                 //generate random airline

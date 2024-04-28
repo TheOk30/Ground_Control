@@ -15,10 +15,14 @@ public class DataBaseManager : MonoBehaviour
 {
     public static DataBaseManager Instance;
 
+    private string AirportCode = "";
+    private int numRunways = 0;
+    private int flightInterval = 0;
+
     /// <summary>
     /// Manage and remember variables in between scenes.
     /// If there are two instances of this script in a scene, 
-    /// delete one of themץ
+    /// delete one of them
     /// This Instance is also the only way for outside classes to get access to the members of this Script
     /// since it is built as a true singleton, the instance of this class is only created once
     /// </summary>
@@ -33,6 +37,35 @@ public class DataBaseManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+
+    /// <summary>
+    /// set the airport info for the current airport
+    /// </summary>
+    /// <param name="airportCode"></param>
+    /// <param name="numRunways"></param>
+    /// <param name="flightInterval"></param>
+    public void SetAirportInfo(string airportCode, int numRunways, int flightInterval)
+    {
+        this.AirportCode = airportCode;
+        this.numRunways = numRunways;
+        this.flightInterval = flightInterval;
+    }
+
+    public string GetAirportCode()
+    {
+        return AirportCode;
+    }
+
+    public int GetNumRunways()
+    {
+        return numRunways;
+    }
+
+    public int GetFlightInterval()
+    {
+        return flightInterval;
+    }
+
 
     /// <summary>
     /// Inset the extracted airport info to the database
@@ -320,7 +353,60 @@ public class DataBaseManager : MonoBehaviour
 
         return new Airport(id, name, country, city, latitude, longitude, code, runwayLength);
     }
-   
+
+    public Airport GetAllAirportInfoByCode(string code)
+    {
+        int id = 0;
+        string name = "";
+        double latitude = 0.0;
+        double longitude = 0.0;
+        string country = "";
+        string city = "";
+        int runwayLength = 0;
+
+        using (IDbConnection dbConnection = CreateAndOpenDatabase())
+        {
+            using (IDbCommand dbCommandReadValues = dbConnection.CreateCommand())
+            {
+                dbCommandReadValues.CommandText = "SELECT ID, Name, Latitude, Longitude, Country, City, RunwayLength FROM AirportsTable WHERE AirportCode = @AirportCode;";
+                IDbDataParameter codeParameter = dbCommandReadValues.CreateParameter();
+                codeParameter.ParameterName = "@AirportCode";
+                codeParameter.Value = code;
+                dbCommandReadValues.Parameters.Add(codeParameter);
+
+                using (IDataReader dataReader = dbCommandReadValues.ExecuteReader())
+                {
+                    if (dataReader.Read())
+                    {
+                        id = dataReader.GetInt32(0);
+                        name = dataReader.GetString(1);
+                        latitude = dataReader.GetDouble(2);
+                        longitude = dataReader.GetDouble(3);
+                        country = dataReader.GetString(4);
+
+                        // Check for null values before retrieving data
+                        if (!dataReader.IsDBNull(5))
+                        {
+                            city = dataReader.GetString(5);
+                        }
+
+                        if (!dataReader.IsDBNull(6))
+                        {
+                            runwayLength = dataReader.GetInt32(6);
+                        }
+                    }
+                    else
+                    {
+                        // Query returned no rows, handle it accordingly
+                        return null; // Or any other appropriate action
+                    }
+                }
+            }
+        }
+
+        return new Airport(id, name, country, city, latitude, longitude, code, runwayLength);
+    }
+
     /// <summary>
     /// Get All the informarmation of the Airline for the id provided
     /// </summary>

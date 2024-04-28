@@ -120,6 +120,7 @@ namespace Assets
                 this.flightDuration = Math.Abs(CalculateFlightDuration());
                 TimeSpan duration = TimeSpan.FromMinutes(this.flightDuration);
                 this.estimatedLandingTime = this.estimatedTakeoffTime.Add(duration);
+                this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(-this.estimatedLandingTime.Second);
             }
 
             catch (Exception e)
@@ -270,17 +271,20 @@ namespace Assets
 
         public void ChangeTakeoffTime(int add)
         {
-            this.estimatedTakeoffTime.AddMinutes(add);
-            this.estimatedLandingTime.AddMinutes(add);
+            this.estimatedTakeoffTime = this.estimatedTakeoffTime.AddSeconds(add);
+            this.estimatedTakeoffTime = this.estimatedTakeoffTime.AddSeconds(-this.estimatedTakeoffTime.Second);
+            this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(add);
+            this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(-this.estimatedLandingTime.Second);
         }
 
         public void ChangeLandingTime(int add)
         {
             this.flightDuration += add;
-            this.estimatedLandingTime.AddMinutes(add);
+            this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(add);
+            this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(-this.estimatedLandingTime.Second);
         }
 
-        public void SetStatus(String status)
+        public void SetStatus(string status)
         {
             this.status = status;
         }
@@ -288,6 +292,7 @@ namespace Assets
         public void SetEstimatedLandingTime(DateTime landingTime)
         {
             this.estimatedLandingTime = landingTime;
+            this.estimatedLandingTime = this.estimatedLandingTime.AddSeconds(-this.estimatedLandingTime.Second);
         }
 
         public Airport GetArrivalAirport()

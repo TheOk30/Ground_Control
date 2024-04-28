@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 using static Assets.FlightIssues;
 using static UnityEditor.FilePathAttribute;
@@ -88,48 +89,68 @@ namespace Assets.Scripts.SolverController
 
             int flightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightToReorder);
             AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyUp(flightIndex);
-            AirportManager.Instance.newReorder();
             
             bool flag = false;
-            while(!flag)
+            while (!flag)
             {
                 flag = true;
                 List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
-                DateTime[] DifferentLaneUseTime = new DateTime[flightsList.Count];
+                DateTime[] DifferentLaneUseTime = new DateTime[AirportManager.Instance.GetNumRunways()];
+
+                for (int i = 0; i < DifferentLaneUseTime.Length; i++)
+                {
+                    DifferentLaneUseTime[i] =  DateTime.MinValue;
+                }
+
                 DifferentLaneUseTime[flightsList[0].GetRunway() - 1] = flightsList[0].GetTimeToCompare();
 
-                for (int i = 1; i < flightsList.Count - 1; i++)
+                for (int i = 1; i < flightsList.Count; i++)
                 {
-                    TimeSpan difference = flightsList[i].GetTimeToCompare() - DifferentLaneUseTime.Min();
+                    int index = i;
 
-                    if ((int)difference.TotalSeconds < SimulationController.TimeBetweenFlightsOnSchedule)
+                    TimeSpan difference;
+                    if (DifferentLaneUseTime.Min() != DateTime.MinValue)
+                        difference = flightsList[i].GetTimeToCompare() - DifferentLaneUseTime.Min();
+
+                    else
+                        difference = TimeSpan.FromSeconds(SimulationController.TimeBetweenFlightsOnSchedule * 60);
+
+                    Debug.Log("Reordering: " + flightsList[i].GetFlightNumber() + " time: " + flightsList[i].GetTimeToCompare() + " difference: " + difference.TotalMinutes);
+
+                    if ((int)difference.TotalSeconds < SimulationController.TimeBetweenFlightsOnSchedule * 60)
                     {
                         flag = false;
-                        int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule - (int)difference.TotalSeconds;
-                        
+                        int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule * 60 - (int)difference.TotalSeconds;
+                        Debug.Log("pre: " + flightsList[i - 1].GetFlightNumber() + " curr: " + flightsList[i].GetFlightNumber() + " diffrence tresh " + differenceThreshold);
+                        Debug.Log("pre: " + flightsList[i - 1].GetTimeToCompare() + " curr: " + flightsList[i].GetTimeToCompare() + " diffrence tresh " + difference.TotalMinutes);
+
                         int preiviousFlightGrade = flightsList[i - 1].GetProblem().GetIssue() != null ? flightsList[i - 1].GetProblem().GetIssue().GetGrade() : 0;
                         int currentFlightGrade = flightsList[i].GetProblem().GetIssue() != null ? flightsList[i].GetProblem().GetIssue().GetGrade() : 0;
 
-                        if (currentFlightGrade >= preiviousFlightGrade)
+                        if (currentFlightGrade > preiviousFlightGrade)
                         {
-                            flightsList[i - 1].ChangeEitherTime(differenceThreshold);
+                            flightsList[i - 1].ChangeEitherTime((int)difference.TotalSeconds + SimulationController.TimeBetweenFlightsOnSchedule * 60);
                             int preflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[i - 1]);
-                            AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyUp(preflightIndex);
-
+                            AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyDown(preflightIndex);
+                            index = i - 1;
                         }
 
                         else
                         {
                             flightsList[i].ChangeEitherTime(differenceThreshold);
-                            int currflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[i - 1]);
-                            AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyUp(currflightIndex);
+                            int currflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[i]);
+                            AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyDown(currflightIndex);
                         }
                     }
 
-                    DifferentLaneUseTime[Array.IndexOf(DifferentLaneUseTime, DifferentLaneUseTime.Min())] = flightsList[i].GetTimeToCompare();
-                    flightsList[i].SetRunway(Array.IndexOf(DifferentLaneUseTime, DifferentLaneUseTime.Min()) + 1);
+                    int indexOfArray = Array.IndexOf(DifferentLaneUseTime, DifferentLaneUseTime.Min()); 
+                    DifferentLaneUseTime[indexOfArray] = flightsList[index].GetTimeToCompare();
+                    DifferentLaneUseTime[indexOfArray] = DifferentLaneUseTime[indexOfArray].AddSeconds(-DifferentLaneUseTime[indexOfArray].Second);
+                    flightsList[index].SetRunway(indexOfArray + 1);
                 }
-            } 
+            }
+
+            AirportManager.Instance.newReorder();
         }
 
         /// <summary>
@@ -180,16 +201,17 @@ namespace Assets.Scripts.SolverController
                 flight.SetEstimatedLandingTime(currTime.AddMinutes(distanceToAirport / speed));
             }
 
-            while(altenateAirport == null)
-            {
-                int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()]; 
 
+            while (altenateAirport == null)
+            {
                 if (minDistance <= distanceToAirport)
                 {
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null 
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -251,7 +273,7 @@ namespace Assets.Scripts.SolverController
                 flight.SetEstimatedLandingTime(currTime.AddMinutes(distanceToAirport / speed));
             }
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -260,7 +282,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -297,7 +320,7 @@ namespace Assets.Scripts.SolverController
                 flight.SetEstimatedLandingTime(currTime.AddMinutes(distanceToAirport / speed));
             }
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -306,7 +329,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -445,7 +469,7 @@ namespace Assets.Scripts.SolverController
             int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -454,7 +478,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -481,7 +506,7 @@ namespace Assets.Scripts.SolverController
             int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -490,7 +515,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -513,7 +539,7 @@ namespace Assets.Scripts.SolverController
             int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -522,7 +548,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -574,7 +601,7 @@ namespace Assets.Scripts.SolverController
             int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -583,7 +610,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -611,7 +639,7 @@ namespace Assets.Scripts.SolverController
             int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
-            int minRadius = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
+            int minRadius = SimulationController.searchRadiusToLand[flight.GetProblem().GetIssue().GetGrade()];
 
             while (altenateAirport == null)
             {
@@ -620,7 +648,8 @@ namespace Assets.Scripts.SolverController
                     altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
                 }
 
-                if (minDistance > distanceToAirport || (altenateAirport != null && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
+                if (minRadius > SimulationController.MaxRadiusDistance || minDistance > distanceToAirport || (altenateAirport != null
+                    && altenateAirport.GetAirportCode().Equals(flight.GetArrivalAirport().GetAirportCode())))
                 {
                     ReorderFlightsSchedule(flight);
                     return;
@@ -640,7 +669,7 @@ namespace Assets.Scripts.SolverController
         /// <param name="currTime"></param>
         private static void EngineFailureSingleSolver(Flight flight, DateTime currTime)
         {
-            flight.SetStatus("Engine Failure Single");
+            flight.SetStatus("Single Failure");
             Debug.Log("Solving EngineFailureSingle");
 
             Airport altenateAirport = null;
@@ -649,7 +678,7 @@ namespace Assets.Scripts.SolverController
 
             int minRadius = flight.GetPlane().GetMaxDistanceAvailable(currTime);
 
-            if (minRadius <= distanceToAirport)
+            if (minDistance <= distanceToAirport)
             {
                 altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
             }
@@ -681,7 +710,7 @@ namespace Assets.Scripts.SolverController
         /// <param name="currTime"></param>
         private static void EngineFailureDoubleSolver(Flight flight, DateTime currTime)
         {
-            flight.SetStatus("Double Engine Failure");
+            flight.SetStatus("Double Failure");
             Debug.Log("Solving EngineFailureDouble");
 
             Airport altenateAirport = null;
@@ -691,7 +720,7 @@ namespace Assets.Scripts.SolverController
 
             int minRadius = flight.GetPlane().GetMaxDistanceAvailable(currTime);
 
-            if (minRadius <= distanceToAirport)
+            if (minDistance <= distanceToAirport)
             {
                 altenateAirport = (Airport)spatialHashLocation.FindClosestLocations(flight.GetFlightLocation(currTime), flight.GetPlane().GetGrade(), minRadius);
             }

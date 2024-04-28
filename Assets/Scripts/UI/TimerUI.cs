@@ -42,12 +42,12 @@ public class Timer : MonoBehaviour
             if (AirportManager.Instance != null && AirportManager.Instance.GetFlightSchedule() != null)
             {
                 // Check if the number of daily flights is greater than 0
-                if (AirportManager.Instance.GetFlightSchedule().GetNumberOfDailyFlights() > 0)
+                if (AirportManager.Instance.GetFlightSchedule().GetFlights().GetSize() >= 0)
                 {
                     // Accumulate time with multiplier
                     accumulatedTime += Time.deltaTime * this.timeSpeedMultiplier;
 
-                    while (accumulatedTime >= 1.0f)
+                    while (accumulatedTime >= 1.0f && AirportManager.Instance.GetFlightSchedule().GetFlights().GetSize() > 0)
                     {
                         // Update timer display once per second
                         UpdateTimerDisplay();
@@ -83,6 +83,8 @@ public class Timer : MonoBehaviour
         {
             CheckIfFlightsHaveIssues(time);
         }
+
+        //CheckIfFlightsHaveIssues(time);
     }
 
     private void CheckIfFlightsHaveIssues(DateTime time)
@@ -93,7 +95,7 @@ public class Timer : MonoBehaviour
         List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
         foreach (Flight flight in flightsList)
         { 
-            if (flight.DidFlightTakeoff() && flight.GetProblem().HasProblem(time))
+            if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetProblem().HasProblem(time))
             {
                 print(flight.ToString());
                 print(flight.GetProblem().GetIssue().GetName().ToString());
@@ -110,6 +112,7 @@ public class Timer : MonoBehaviour
             if(!flight.DidFlightTakeoff() && flight.GetTakeOffTime() ==  time) 
             {
                 flight.FlightTookOff();
+                print(flight.GetFlightNumber() + "Flight Took Off");
             }
 
             if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetLandingTime() == time)

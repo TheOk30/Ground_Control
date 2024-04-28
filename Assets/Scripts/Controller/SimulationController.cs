@@ -20,7 +20,7 @@ namespace Assets.Scripts.Controller
         public const int First_LastProblemTimePossible = 20;
 
         //Time speeder for the simulation
-        public const int TimeSpeeder = 1000;
+        public const int TimeSpeeder = 7000;
 
         //Interval between flights for the flight schedule creator
         public const int TimeBetweenFlightsOnSchedule = 5;
@@ -84,5 +84,8 @@ namespace Assets.Scripts.Controller
 
         //kg fuel consumption per km
         public static int fuelPerKm = 3;
+
+        //Max distance to look for an alternative landing location
+        public static int MaxRadiusDistance = 1000;
     }
 }

@@ -12,6 +12,7 @@ using System;
 using System.Xml;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
+using UnityEngine.SceneManagement;
 
 public class FlightScheduleUI : MonoBehaviour
 {
@@ -27,27 +28,45 @@ public class FlightScheduleUI : MonoBehaviour
     private int numReorderButtons = 0;
 
     // Start is called before the first frame update
-    private void Start()
+    void Start()
     {
         int sibilingIndex = 0;
-        Airport a = new Airport(1, "Ben Gurion Airport", "Israel", "Tel Aviv", 32.0011197883418, 34.8707382460235, "TLV", 3600);
-        am = AirportManager.InitializeAirportManager(a, 60, 1);
-        am.CreateFlightScheduleForAirport(0);
+        string airportcode = DataBaseManager.Instance.GetAirportCode();
+        int numRunways = DataBaseManager.Instance.GetNumRunways();
+        int flightIntervals = DataBaseManager.Instance.GetFlightInterval();
 
-        flightScheduleTEXT.text = "Flight Schedule: " + am.GetFlightSchedule().GetFlights().GetSize();
-        dealtWithText.text = "Flights Landed: " + numDealWithButtons;
-        removeText.text = "Flights Removed: " + numRemoveButtons;
-
-        flightScheduleTEXT.transform.SetSiblingIndex(sibilingIndex++);
-        
-        // Iterate through the sorted list
-        foreach (Flight flight in am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap())
+        Debug.Log("Airport Code: " + airportcode);
+        Debug.Log("Number of Runways: " + numRunways);
+        Debug.Log("Flight Intervals: " + flightIntervals);
+        if (airportcode != "" && numRunways != 0 && flightIntervals != 0)
         {
-            createButton(flight, sibilingIndex++, "HH:mm");
+            Debug.Log("entered");
+            Airport a = DataBaseManager.Instance.GetAllAirportInfoByCode(airportcode);
+            Debug.Log("Airport: " + a.GetAirportName());
+            am = AirportManager.InitializeAirportManager(a, flightIntervals, numRunways);
+            Debug.Log("Airport Manager flightIntervals: " + am.GetFlightIntervals());
+            Debug.Log("Airport Manager numRunways: " + am.GetNumRunways());
+            am.CreateFlightScheduleForAirport(0);
+
+            flightScheduleTEXT.text = "Flight Schedule: " + am.GetFlightSchedule().GetFlights().GetSize();
+            dealtWithText.text = "Flights Landed: " + numDealWithButtons;
+            removeText.text = "Flights Removed: " + numRemoveButtons;
+
+            flightScheduleTEXT.transform.SetSiblingIndex(sibilingIndex++);
+
+            // Iterate through the sorted list
+            foreach (Flight flight in am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap())
+            {
+                createButton(flight, sibilingIndex++, "HH:mm");
+            }
+
+            dealtWithText.transform.SetSiblingIndex(sibilingIndex++);
+            removeText.transform.SetSiblingIndex(sibilingIndex);
         }
 
-        dealtWithText.transform.SetSiblingIndex(sibilingIndex++);
-        removeText.transform.SetSiblingIndex(sibilingIndex);
+        else
+            LevelTransition.TransitionToScene("Login");
+
     }
 
     // Update is called once per frame
@@ -59,10 +78,11 @@ public class FlightScheduleUI : MonoBehaviour
 
     private void UpdateFlightScheduleUI()
     {
+        flightScheduleTEXT.text = "Flight Schedule: " + am.GetFlightSchedule().GetFlights().GetSize();
+
         // Check if there are new removed flights
         if (numRemoveButtons < am.GetRemovedFlights().Count)
         {
-            flightScheduleTEXT.text = "Flight Schedule: " + am.GetFlightSchedule().GetFlights().GetSize();
             removeText.text = "Flights Removed: " + ++numRemoveButtons;
 
             // Get the latest removed flight
@@ -77,7 +97,6 @@ public class FlightScheduleUI : MonoBehaviour
         // Check if there are new landed flights
         if (numDealWithButtons < am.GetLandedFlights().Count)
         {
-            flightScheduleTEXT.text = "Flight Schedule: " + am.GetFlightSchedule().GetFlights().GetSize();
             dealtWithText.text = "Flights Landed: " + ++numDealWithButtons;
 
             // Get the latest landed flight
@@ -93,20 +112,30 @@ public class FlightScheduleUI : MonoBehaviour
         if(numReorderButtons < am.GetNumReorders())
         {
             Debug.Log("Reordering");
+
+            List<Flight> flights = am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
+
             // Iterate through the sorted list
-            foreach (Flight flight in am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap())
+            foreach (Flight flight in flights)
             {
                 DestroyButtonByID(flight.GetFlightNumber());
             }
 
-            for (int i = 1; i < dealtWithText.transform.GetSiblingIndex(); i++)
+            for (int i = 1; i < flights.Count; i++)
             {
-                createButton(am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap()[i], i, "completed");
+                createButton(am.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap()[i-1], i, "HH:mm");
             }
 
             numReorderButtons++;
         }
-
+        
+        if (am.GetFlightSchedule().GetFlights().GetSize() == 0)
+        {
+            for (int i = 1; i < dealtWithText.transform.GetSiblingIndex(); i++)
+            {
+                DestroyButtonByID(buttonParent.transform.GetChild(i).GetComponent<FlightButtonExpansion>().GetID());
+            }
+        }
     }
 
     private void DestroyButtonByID(string buttonID)
@@ -122,7 +151,6 @@ public class FlightScheduleUI : MonoBehaviour
             {
                 // Destroy the button game object
                 Destroy(child.gameObject);
-                return;  
             }
         }
     }

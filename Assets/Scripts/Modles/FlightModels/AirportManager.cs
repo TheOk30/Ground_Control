@@ -44,8 +44,8 @@ namespace Assets
         public void CreateFlightScheduleForAirport(int flightStartTime)
         {
             // maybe save the past flight schedule in some way
-            
-            DateTime startScheduleTime = DateTime.UtcNow.Date.AddMinutes(flightStartTime + this.flightIntervals);
+            DateTime today = DateTime.Today;
+            DateTime startScheduleTime = new DateTime(today.Year, today.Month, today.Day, 1, 0, 0);
             this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport, this.numRunways);
             this.flightSchedule.AreValuesBetweenNeighborsUnderThreshold();
             AddProblemsToFlights();
@@ -109,6 +109,11 @@ namespace Assets
             return this.numRunways;
         }
 
+        public int GetFlightIntervals()
+        {
+            return this.flightIntervals;
+        }   
+        
         public static AirportManager InitializeAirportManager(Airport airport, int flightIntervals, int numRunways)
         {
             if (Instance == null)
