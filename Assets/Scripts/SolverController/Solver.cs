@@ -96,6 +96,7 @@ namespace Assets.Scripts.SolverController
                 flag = true;
                 List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
                 DateTime[] DifferentLaneUseTime = new DateTime[AirportManager.Instance.GetNumRunways()];
+                int[] LastUsedIndexPerLane = new int[AirportManager.Instance.GetNumRunways()];
 
                 for (int i = 0; i < DifferentLaneUseTime.Length; i++)
                 {
@@ -103,6 +104,7 @@ namespace Assets.Scripts.SolverController
                 }
 
                 DifferentLaneUseTime[flightsList[0].GetRunway() - 1] = flightsList[0].GetTimeToCompare();
+                LastUsedIndexPerLane[flightsList[0].GetRunway() - 1] = 0;
 
                 for (int i = 1; i < flightsList.Count; i++)
                 {
@@ -124,15 +126,16 @@ namespace Assets.Scripts.SolverController
                         Debug.Log("pre: " + flightsList[i - 1].GetFlightNumber() + " curr: " + flightsList[i].GetFlightNumber() + " diffrence tresh " + differenceThreshold);
                         Debug.Log("pre: " + flightsList[i - 1].GetTimeToCompare() + " curr: " + flightsList[i].GetTimeToCompare() + " diffrence tresh " + difference.TotalMinutes);
 
-                        int preiviousFlightGrade = flightsList[i - 1].GetProblem().GetIssue() != null ? flightsList[i - 1].GetProblem().GetIssue().GetGrade() : 0;
+                        int lastIndex = LastUsedIndexPerLane[Array.IndexOf(DifferentLaneUseTime, DifferentLaneUseTime.Min())];
+                        int preiviousFlightGrade = flightsList[lastIndex].GetProblem().GetIssue() != null ? flightsList[lastIndex].GetProblem().GetIssue().GetGrade() : 0;
                         int currentFlightGrade = flightsList[i].GetProblem().GetIssue() != null ? flightsList[i].GetProblem().GetIssue().GetGrade() : 0;
 
                         if (currentFlightGrade > preiviousFlightGrade)
                         {
-                            flightsList[i - 1].ChangeEitherTime((int)difference.TotalSeconds + SimulationController.TimeBetweenFlightsOnSchedule * 60);
-                            int preflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[i - 1]);
+                            flightsList[lastIndex].ChangeEitherTime((int)difference.TotalSeconds + SimulationController.TimeBetweenFlightsOnSchedule * 60);
+                            int preflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[lastIndex]);
                             AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyDown(preflightIndex);
-                            index = i - 1;
+                            index = lastIndex;
                         }
 
                         else
@@ -146,6 +149,7 @@ namespace Assets.Scripts.SolverController
                     int indexOfArray = Array.IndexOf(DifferentLaneUseTime, DifferentLaneUseTime.Min()); 
                     DifferentLaneUseTime[indexOfArray] = flightsList[index].GetTimeToCompare();
                     DifferentLaneUseTime[indexOfArray] = DifferentLaneUseTime[indexOfArray].AddSeconds(-DifferentLaneUseTime[indexOfArray].Second);
+                    LastUsedIndexPerLane[indexOfArray] = i;
                     flightsList[index].SetRunway(indexOfArray + 1);
                 }
             }
@@ -400,7 +404,6 @@ namespace Assets.Scripts.SolverController
             Debug.Log("Solving FasterBurnRate...");
 
             Airport altenateAirport = null;
-            int minDistance = SimulationController.distanceToEmergencyLanding[flight.GetProblem().GetIssue().GetGrade()];
             int distanceToAirport = DistanceAndLocationsFunctions.DistanceBetweenCoordinates(flight.GetFlightLocation(currTime), flight.GetArrivalAirport());
 
             int minRadius = flight.GetPlane().GetMaxDistanceAvailable(currTime);

@@ -77,11 +77,8 @@ namespace Assets.Scripts
             //This loop adds the nearby locations to the list
             for (int i = queryHash - searchRangeLatitude; i <= queryHash + searchRangeLatitude; i++)
             {
-                for (int j = queryHash - searchRangeLongitude; j <= queryHash + searchRangeLongitude; j++)
-                {
-                    if (spatialHash.ContainsKey(i))
-                        nearbyLocations.AddRange(spatialHash[i]);
-                }
+                if (spatialHash.ContainsKey(i))
+                    nearbyLocations.AddRange(spatialHash[i]);
             }
 
             Location closestLocation = null;

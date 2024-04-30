@@ -212,6 +212,9 @@ namespace Assets.Scripts.DataStructures
 
         /// <summary>
         /// Get the list in a sorted fashion
+        /// This Function will not modify the heap while creating the 
+        /// Priority Queue
+        /// Time complexity of: O(n log n)
         /// </summary>
         /// <returns></returns>
         public List<T> GetSortedWithoutModifyingHeap()

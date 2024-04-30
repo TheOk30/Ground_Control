@@ -71,6 +71,7 @@ namespace Assets
                     if (combination == flight_numbers)
                     {
                         flag = true;
+                        break;
                     }
                 }
             }
@@ -155,6 +156,8 @@ namespace Assets
             this.status = this.status != "In Air" ? ": " + this.status : "";
             this.status = "Landed" + this.status;
             this.landed = true;
+            AirportManager.Instance.GetFlightSchedule().GetFlights().RemoveNode(this);
+            AirportManager.Instance.AddFlightToLandedFlights(this);
         }
 
         public bool FlightHasLanded()
@@ -167,6 +170,11 @@ namespace Assets
             return this.status;
         }
 
+        /// <summary>
+        /// Get the distance traveled by the flight up to the current system time
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         public int GetDistanceTraveled(DateTime currentTime)
         {
             // Dividing by 60.0 ensures floating-point division

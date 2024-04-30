@@ -95,32 +95,33 @@ public class Timer : MonoBehaviour
         List<Flight> flightsList = AirportManager.Instance.GetFlightSchedule().GetFlights().GetSortedWithoutModifyingHeap();
         foreach (Flight flight in flightsList)
         { 
-            if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetProblem().HasProblem(time))
+            // check the if the flight has a problem that's apearing in this time
+            // if it does, solve the problem
+            // if flight has taken off and has not landed and has a problem
+            if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetProblem().HasProblem(flight, time))
             {
                 print(flight.ToString());
                 print(flight.GetProblem().GetIssue().GetName().ToString());
                 print(time.ToString("HH:mm:ss") + "  " + time.ToString("d/M/y"));
 
-                if (ProblemCreator.problemFunctionsDict.ContainsKey(flight.GetProblem().GetIssue().GetId()))
-                {
-                    ProblemCreator.problemFunctionsDict[flight.GetProblem().GetIssue().GetId()].Invoke(flight);
-                }
-
                 solver.SolveFlightIssue(flight);
             }
 
+            // If the flight hasn't took off and its takeoff time is now
+            // mark the flight as took off
             if(!flight.DidFlightTakeoff() && flight.GetTakeOffTime() ==  time) 
             {
                 flight.FlightTookOff();
                 print(flight.GetFlightNumber() + "Flight Took Off");
             }
 
+            //If flight took off and has not landed and its landing time is now
+            // mark the flight as landed
+            //remove the flight from the flight schedule
             if (flight.DidFlightTakeoff() && !flight.FlightHasLanded() && flight.GetLandingTime() == time)
             {
                 flight.FlightLanded();
                 Debug.Log("Flight Landed");
-                AirportManager.Instance.GetFlightSchedule().GetFlights().RemoveNode(flight);
-                AirportManager.Instance.AddFlightToLandedFlights(flight);
             }
         }
     }

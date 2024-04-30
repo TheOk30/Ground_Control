@@ -78,7 +78,7 @@ namespace Assets.Scripts.Modles.IssuesControler
         ///     true if the problem has been activated
         ///     false if there is there is no problem active
         /// </returns>
-        public bool HasProblem(DateTime currentSystemTime)
+        public bool HasProblem(Flight flight, DateTime currentSystemTime)
         {
             if(this.activeProblem == 1)
                 return false;
@@ -90,6 +90,14 @@ namespace Assets.Scripts.Modles.IssuesControler
             {
                 this.activeProblem = 1;
                 MakeProblemAppear();
+
+                // Check if the problem is in the problem dictionary
+                // Check if the problem requires a change in the current stats of the flight
+                if (ProblemCreator.problemFunctionsDict.ContainsKey(this.issueNumber))
+                {
+                    ProblemCreator.problemFunctionsDict[this.issueNumber].Invoke(flight);
+                }
+
                 return true;
             }
 
