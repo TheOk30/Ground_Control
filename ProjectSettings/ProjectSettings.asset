@@ -628,11 +628,11 @@ PlayerSettings:
   m_MobileRenderingPath: 1
   metroPackageName: Ground_Control
   metroPackageVersion: 
-  metroCertificatePath: 
+  metroCertificatePath: Assets/WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: DefaultCompany
+  metroCertificateIssuer: DefaultCompany
+  metroCertificateNotAfter: 8038abc043c9db01
   metroApplicationDescription: Ground_Control
   wsaImages: {}
   metroTileShortName: 

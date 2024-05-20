@@ -5,7 +5,6 @@ using Mono.Data.Sqlite;
 using System;
 using System.Linq;
 using System.Data;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 using System.Net;
 using Unity.VisualScripting;
 using Assets;
@@ -88,7 +87,8 @@ public class DataBaseManager : MonoBehaviour
         string lonForDB = '"' + lon.ToString() + '"' + ',';
         string countryForDB = '"' + country + '"' + ',';
 
-        dbCommandInsertValues.CommandText = "INSERT INTO AirportsTable (ID, Name, Latitude, Longitude, Country, AirportCode) VALUES(" + idForDB + nameForDB +  latForDB + lonForDB + countryForDB + codeForDB + ");";
+        dbCommandInsertValues.CommandText = "INSERT INTO AirportsTable (ID, Name, Latitude, Longitude, Country, AirportCode) " +
+                                           "VALUES(" + idForDB + nameForDB +  latForDB + lonForDB + countryForDB + codeForDB + ");";
         dbCommandInsertValues.ExecuteNonQuery();
         dbConnection.Close();
     }
@@ -117,7 +117,8 @@ public class DataBaseManager : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             listItemForDB = '"' + list[i].ToString() + '"';
-            dbCommandInsertValues.CommandText = "INSERT INTO" + tableNameForDB + "(" + mainElementNameForDB + otherElementNameForDB + ") VALUES(" + idForDB + listItemForDB + ");";
+            dbCommandInsertValues.CommandText = "INSERT INTO" + tableNameForDB + "(" + mainElementNameForDB + otherElementNameForDB + ") " +
+                                                "VALUES(" + idForDB + listItemForDB + ");";
             dbCommandInsertValues.ExecuteNonQuery();
         }
 
@@ -278,7 +279,6 @@ public class DataBaseManager : MonoBehaviour
             {
                 if (dataReader.GetInt32(7) != null)
                     runwayLength = dataReader.GetInt32(7);
-
             }
 
             catch (InvalidCastException)
@@ -354,6 +354,12 @@ public class DataBaseManager : MonoBehaviour
         return new Airport(id, name, country, city, latitude, longitude, code, runwayLength);
     }
 
+    /// <summary>
+    /// Get all the info for a certain airport with a given code 
+    /// from the database
+    ///  </summary>
+    /// <param name="code"></param>
+    /// <returns></returns>
     public Airport GetAllAirportInfoByCode(string code)
     {
         int id = 0;
@@ -395,6 +401,7 @@ public class DataBaseManager : MonoBehaviour
                             runwayLength = dataReader.GetInt32(6);
                         }
                     }
+
                     else
                     {
                         // Query returned no rows, handle it accordingly
@@ -452,7 +459,8 @@ public class DataBaseManager : MonoBehaviour
         string AirlineIdForDB = '"' + AirlineId.ToString() + '"';
         string MainAirportIDForDB = '"' + MainAirportID.ToString() + '"';
 
-        dbCommandReadValues.CommandText = "SELECT AirportID FROM AirlinesToAirportsManager WHERE AirlineID =" + AirlineIdForDB + "AND AirportID <>" + MainAirportIDForDB + "ORDER BY RANDOM() LIMIT 1;";
+        dbCommandReadValues.CommandText = "SELECT AirportID FROM AirlinesToAirportsManager WHERE AirlineID =" + AirlineIdForDB +
+                                            "AND AirportID <>" + MainAirportIDForDB + "ORDER BY RANDOM() LIMIT 1;";
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();
         
         while (dataReader.Read())
@@ -693,7 +701,8 @@ public class DataBaseManager : MonoBehaviour
 
         //Create a table for the Planes Table count in the database if it does not exist yet
         dbCommandCreateTable = dbConnection.CreateCommand();
-        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS PlanesTable (ID INTEGER PRIMARY KEY, Name TEXT, FuelCapacity INTEGER, AvrSpeed INTEGER, FuelDropRate INTEGER, MaxSpeed INTEGER, MaxRange INTEGER, RunwayGrade INTEGER)";
+        dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS PlanesTable (ID INTEGER PRIMARY KEY, Name TEXT, FuelCapacity INTEGER, AvrSpeed INTEGER, FuelDropRate INTEGER, " +
+                                            "MaxSpeed INTEGER, MaxRange INTEGER, RunwayGrade INTEGER)";
         dbCommandCreateTable.ExecuteReader();
 
         //Create a table for the Planes Table count in the database if it does not exist yet

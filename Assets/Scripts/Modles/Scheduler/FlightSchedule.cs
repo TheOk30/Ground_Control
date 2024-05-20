@@ -17,8 +17,9 @@ namespace Assets
         private double flightIntervals;
         private int numberOfDailyFlights;
         private Airport MainAirport;
-        private static FlightSchedule Instance = null;
+        public static FlightSchedule Instance = null;
         private int numRunways;
+        public static int weatherIndex = 0;
 
         private FlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport, int numRunways)
         {
@@ -29,9 +30,14 @@ namespace Assets
             Debug.Log("Creating Flight Schedule for " + date.ToString());
             this.MainAirport = MainAirport;
             this.numRunways = numRunways;
+
+            weatherIndex = (SimulationController.rnd.Next(0, 100) % 7) == 0 ? SimulationController.rnd.Next(1, 4) : 0;
             CreateFlights();
         }
 
+        /// <summary>
+        /// Create flights for the flight schedule
+        /// </summary>
         private void CreateFlights()
         {
             DateTime flightscheduleDate = this.date;
@@ -102,54 +108,81 @@ namespace Assets
         /// <summary>
         /// Make sure value adhere to the rules of the airport
         /// </summary>
-        public void AreValuesBetweenNeighborsUnderThreshold()
-        {
-            List<Flight> values = this.flights.GetSortedWithoutModifyingHeap();
-            for (int i = 1; i < values.Count; i++)
-            {
-                TimeSpan difference = values[i].GetTimeToCompare() - values[i - 1].GetTimeToCompare();
+        //public void AreValuesBetweenNeighborsUnderThreshold()
+        //{
+        //    List<Flight> values = this.flights.GetSortedWithoutModifyingHeap();
+        //    for (int i = 1; i < values.Count; i++)
+        //    {
+        //        TimeSpan difference = values[i].GetTimeToCompare() - values[i - 1].GetTimeToCompare();
 
-                if ((int)difference.TotalSeconds < SimulationController.TimeBetweenFlightsOnSchedule)
-                {
-                    // Calculate the difference between the threshold and the difference between two flights
-                    int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule - (int)difference.TotalSeconds;
+        //        if ((int)difference.TotalSeconds < (SimulationController.TimeBetweenFlightsOnSchedule + SimulationController.Weather[weatherIndex]) * 60)
+        //        {
+        //            // Calculate the difference between the threshold and the difference between two flights
+        //            int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule - (int)difference.TotalSeconds;
 
-                    // Adjust the time of current flight if it's landing at main
-                    if (values[i].GetIsFlightLandingAtMain())
-                    {
-                        values[i].ChangeLandingTime(differenceThreshold);
-                    }
+        //            // Adjust the time of current flight if it's landing at main
+        //            if (values[i].GetIsFlightLandingAtMain())
+        //            {
+        //                values[i].ChangeLandingTime(differenceThreshold);
+        //            }
 
-                    // Adjust the time of current flight if it's taking off at main
-                    else
-                    {
-                        values[i].ChangeTakeoffTime(differenceThreshold);
-                    }
-                }
-            }
-        }
+        //            // Adjust the time of current flight if it's taking off at main
+        //            else
+        //            {
+        //                values[i].ChangeTakeoffTime(differenceThreshold);
+        //            }
+        //        }
+        //    }
+        //}
 
+        /// <summary>
+        /// Get the Date of the flight schedule
+        /// </summary>
+        /// <returns></returns>
         public DateTime GetDate()       
         { 
             return date; 
         } 
 
+        /// <summary>
+        /// Get the number of daily flights
+        /// </summary>
+        /// <returns></returns>
         public int GetNumberOfDailyFlights()
         {
             return this.numberOfDailyFlights;
         }
 
+        /// <summary>
+        /// Get the flights in heap format
+        /// </summary>
+        /// <returns></returns>
         public MinHeap<Flight> GetFlights()
         {
             return this.flights;
         }
+
+        /// <summary>
+        /// Create the flight schedule object singleton
+        /// activated by the main airport class
+        /// </summary>
+        /// <param name="flightStartTime"></param>
+        /// <param name="date"></param>
+        /// <param name="flightIntervals"></param>
+        /// <param name="MainAirport"></param>
+        /// <param name="numRunways"></param>
+        /// <returns></returns>
         public static FlightSchedule CreateFlightSchedule(int flightStartTime, DateTime date, int flightIntervals, Airport MainAirport, int numRunways)
         {
-            if(Instance == null || DateTime.Compare(Instance.GetDate(), date) > 0) 
+            if(Instance == null) 
                 Instance = new FlightSchedule(flightStartTime, date, flightIntervals, MainAirport, numRunways);
             return Instance;
         }
 
+        /// <summary>
+        /// to string function
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string str = "";

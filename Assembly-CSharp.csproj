@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\Modles\FlightModels\Location.cs" />
     <Compile Include="Assets\Scripts\UI\BackgroundStretchHandler.cs" />
     <Compile Include="Assets\Scripts\DataStructures\MinHeap.cs" />
+    <Compile Include="Assets\Scripts\UI\ReturnButton.cs" />
     <Compile Include="Assets\Scripts\Controller\ExtractInformationToDB.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesController\ProblemCreator.cs" />
     <Compile Include="Assets\Scripts\UI\LevelTransition.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Assets\Scripts\UI\TimerUI.cs" />
     <Compile Include="Assets\Scripts\UI\FlightScheduleUI.cs" />
     <Compile Include="Assets\Scripts\Modles\FlightModels\Plane.cs" />
+    <Compile Include="Assets\Scripts\UI\Quit.cs" />
     <Compile Include="Assets\Scripts\Modles\Scheduler\FlightSchedule.cs" />
     <Compile Include="Assets\Scripts\Controller\DistanceAndLocationsFunctions.cs" />
     <Compile Include="Assets\Scripts\Modles\IssuesController\FlightIssues.cs" />

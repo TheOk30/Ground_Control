@@ -47,7 +47,7 @@ namespace Assets
             DateTime today = DateTime.Today;
             DateTime startScheduleTime = new DateTime(today.Year, today.Month, today.Day, 1, 0, 0);
             this.flightSchedule = FlightSchedule.CreateFlightSchedule(flightStartTime, startScheduleTime, this.flightIntervals, this.airport, this.numRunways);
-            this.flightSchedule.AreValuesBetweenNeighborsUnderThreshold();
+            //this.flightSchedule.AreValuesBetweenNeighborsUnderThreshold();
             AddProblemsToFlights();
         }
 
@@ -64,56 +64,102 @@ namespace Assets
             }
         }
 
+        /// <summary>
+        /// Get the main airport that the simulation is working on
+        /// </summary>
+        /// <returns></returns>
         public Airport GetMainAirport()
         {
             return this.airport;
         }
 
+        /// <summary>
+        /// Get The Flight Schedule
+        /// </summary>
+        /// <returns></returns>
         public FlightSchedule GetFlightSchedule()
         {
             return this.flightSchedule;
         }
 
+        /// <summary>
+        /// Get the flight that have been removed
+        /// </summary>
+        /// <param name="flight"></param>
         public void AddFlightToRemovedFlights(Flight flight)
         {
             this.removedFligths.Add(flight);
         }
 
+        /// <summary>
+        /// Get the flight intervals
+        /// </summary>
+        /// <param name="flight"></param>
         public void AddFlightToLandedFlights(Flight flight)
         {
             this.landedFligths.Add(flight);
         }
 
+        /// <summary>
+        /// Get the removed flights
+        /// </summary>
+        /// <returns></returns>
         public List<Flight> GetRemovedFlights()
         {
             return this.removedFligths;
         }
 
+        /// <summary>
+        /// Get the flights that havw landed
+        /// </summary>
+        /// <returns></returns>
         public List<Flight> GetLandedFlights()
         {
             return this.landedFligths;
         }
 
+        /// <summary>
+        /// Get the number of the reorders that have been done
+        /// </summary>
+        /// <returns></returns>
         public int GetNumReorders()
         {
             return this.numReorders;
         }
 
+        /// <summary>
+        /// Add a new reorder to the list
+        /// </summary>
         public void newReorder()
         {
             this.numReorders++;
         }
 
+        /// <summary>
+        /// Get the number of runways
+        /// </summary>
+        /// <returns></returns>
         public int GetNumRunways()
         {
             return this.numRunways;
         }
 
+        /// <summary>
+        /// Get the flight intervals
+        /// </summary>
+        /// <returns></returns>
         public int GetFlightIntervals()
         {
             return this.flightIntervals;
         }   
         
+        /// <summary>
+        /// Initialize the airport manager singleton
+        /// </summary>
+        /// <param name="airport"></param>
+        /// <param name="flightIntervals"></param>
+        /// <param name="numRunways"></param>
+        /// <returns></returns>
         public static AirportManager InitializeAirportManager(Airport airport, int flightIntervals, int numRunways)
         {
             if (Instance == null)

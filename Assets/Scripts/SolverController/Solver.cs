@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 using static Assets.FlightIssues;
-using static UnityEditor.FilePathAttribute;
+
 
 namespace Assets.Scripts.SolverController
 {
@@ -73,7 +73,8 @@ namespace Assets.Scripts.SolverController
             DateTime currTime = Timer.time;
             solvingFunctionsDict[flight.GetProblem().GetIssue().GetId()].Invoke(flight, currTime);
 
-            Debug.Log(Timer.time + " takeoff: " + flight.GetDepartingAirport() + " landing: " + flight.GetArrivalAirport() + " current location: " + flight.GetFlightLocation(Timer.time));
+            Debug.Log(Timer.time + " takeoff: " + flight.GetDepartingAirport() + " landing: " + 
+                    flight.GetArrivalAirport() + " current location: " + flight.GetFlightLocation(Timer.time));
         }
 
         /// <summary>
@@ -115,14 +116,14 @@ namespace Assets.Scripts.SolverController
                         difference = flightsList[i].GetTimeToCompare() - DifferentLaneUseTime.Min();
 
                     else
-                        difference = TimeSpan.FromSeconds(SimulationController.TimeBetweenFlightsOnSchedule * 60);
+                        difference = TimeSpan.FromSeconds((SimulationController.TimeBetweenFlightsOnSchedule + SimulationController.Weather[FlightSchedule.weatherIndex]) * 60);
 
                     Debug.Log("Reordering: " + flightsList[i].GetFlightNumber() + " time: " + flightsList[i].GetTimeToCompare() + " difference: " + difference.TotalMinutes);
 
-                    if ((int)difference.TotalSeconds < SimulationController.TimeBetweenFlightsOnSchedule * 60)
+                    if ((int)difference.TotalSeconds < (SimulationController.TimeBetweenFlightsOnSchedule + SimulationController.Weather[FlightSchedule.weatherIndex]) * 60)
                     {
                         flag = false;
-                        int differenceThreshold = SimulationController.TimeBetweenFlightsOnSchedule * 60 - (int)difference.TotalSeconds;
+                        int differenceThreshold = (SimulationController.TimeBetweenFlightsOnSchedule + SimulationController.Weather[FlightSchedule.weatherIndex]) * 60 - (int)difference.TotalSeconds;
                         Debug.Log("pre: " + flightsList[i - 1].GetFlightNumber() + " curr: " + flightsList[i].GetFlightNumber() + " diffrence tresh " + differenceThreshold);
                         Debug.Log("pre: " + flightsList[i - 1].GetTimeToCompare() + " curr: " + flightsList[i].GetTimeToCompare() + " diffrence tresh " + difference.TotalMinutes);
 
@@ -132,7 +133,7 @@ namespace Assets.Scripts.SolverController
 
                         if (currentFlightGrade > preiviousFlightGrade)
                         {
-                            flightsList[lastIndex].ChangeEitherTime((int)difference.TotalSeconds + SimulationController.TimeBetweenFlightsOnSchedule * 60);
+                            flightsList[lastIndex].ChangeEitherTime((int)difference.TotalSeconds + (SimulationController.TimeBetweenFlightsOnSchedule + SimulationController.Weather[FlightSchedule.weatherIndex]) * 60);
                             int preflightIndex = AirportManager.Instance.GetFlightSchedule().GetFlights().GetHeap().IndexOf(flightsList[lastIndex]);
                             AirportManager.Instance.GetFlightSchedule().GetFlights().HeapifyDown(preflightIndex);
                             index = lastIndex;
@@ -169,7 +170,6 @@ namespace Assets.Scripts.SolverController
             AirportManager.Instance.AddFlightToRemovedFlights(flight);
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>
         /// Function that solves the Lightly Sick Problem
         /// </summary>
@@ -748,6 +748,10 @@ namespace Assets.Scripts.SolverController
             RemoveFlightFromSchedule(flight);
         }
 
+        /// <summary>
+        /// Intialize the solver singleton
+        /// </summary>
+        /// <returns></returns>
         public static Solver InitializeSolver()
         {
             if (Instance == null)

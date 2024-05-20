@@ -63,7 +63,8 @@ namespace Assets.Scripts.Modles.IssuesControler
             if (SimulationController.rnd.Next(1, 101) % SimulationController.percentageOfProblem == 0)
             {
                 this.issueNumber = SimulationController.rnd.Next(1, DataBaseManager.Instance.GetTheLastIdFromTable("IssuesTable")+1); 
-                int TimeTillApearenceInteger = SimulationController.rnd.Next(SimulationController.First_LastProblemTimePossible, FlightDuration - SimulationController.First_LastProblemTimePossible);
+                int TimeTillApearenceInteger = SimulationController.rnd.Next(SimulationController.First_LastProblemTimePossible, 
+                                                                FlightDuration - SimulationController.First_LastProblemTimePossible);
                 this.apearenceTime = takeoffTime.AddMinutes(TimeTillApearenceInteger);
                 Debug.Log(this.issueNumber + " "+  this.apearenceTime.ToString("HH:mm:ss"));
             }           
@@ -156,7 +157,8 @@ namespace Assets.Scripts.Modles.IssuesControler
         /// <param name="flight"></param>
         private static void NotEnoughFuelProblem(Flight flight)
         {
-            int newFuelLevel = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentFuelLevel(Timer.time)) / 100;
+            int newFuelLevel = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, 
+                SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentFuelLevel(Timer.time)) / 100;
             flight.GetPlane().SetNewCurrentFuelLevel(newFuelLevel);
         }
 
@@ -167,7 +169,8 @@ namespace Assets.Scripts.Modles.IssuesControler
         /// <param name="flight"></param>
         private static void FasterBurnRateProblem(Flight flight)
         {
-            int newFuelLevel = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin + 100, SimulationController.DoubleEngineRateMax + 100) * flight.GetPlane().GetFuelDropRate()) / 100;
+            int newFuelLevel = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin + 100, 
+                SimulationController.DoubleEngineRateMax + 100) * flight.GetPlane().GetFuelDropRate()) / 100;
             flight.GetPlane().SetNewFuelDropRate(newFuelLevel);
         }
 
@@ -177,7 +180,8 @@ namespace Assets.Scripts.Modles.IssuesControler
         /// </summary>
         private static void ThrustProblem(Flight flight)
         {
-            int newSpeed = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
+            int newSpeed = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, 
+                SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
             flight.GetPlane().SetCurrentSpeed(newSpeed);
         }
 
@@ -187,7 +191,8 @@ namespace Assets.Scripts.Modles.IssuesControler
         /// </summary>
         private static void LowOutputSingleProblem(Flight flight)
         {
-            int newSpeed = (SimulationController.rnd.Next(SimulationController.SingleEngineRateMin, SimulationController.SingleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
+            int newSpeed = (SimulationController.rnd.Next(SimulationController.SingleEngineRateMin, 
+                SimulationController.SingleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
             flight.GetPlane().SetCurrentSpeed(newSpeed);
         }
 
@@ -197,7 +202,8 @@ namespace Assets.Scripts.Modles.IssuesControler
         /// </summary>
         private static void LowOutputDoubleProblem(Flight flight)
         {
-            int newSpeed = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
+            int newSpeed = (SimulationController.rnd.Next(SimulationController.DoubleEngineRateMin, 
+                SimulationController.DoubleEngineRateMax) * flight.GetPlane().GetCurrentSpeed()) / 100;
             flight.GetPlane().SetCurrentSpeed(newSpeed);
         }
 

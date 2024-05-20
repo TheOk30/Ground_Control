@@ -87,6 +87,10 @@ public class Timer : MonoBehaviour
         //CheckIfFlightsHaveIssues(time);
     }
 
+    /// <summary>
+    /// Function that gets called every frame to monitor the flights
+    /// </summary>
+    /// <param name="time"></param>
     private void CheckIfFlightsHaveIssues(DateTime time)
     {
         if (AirportManager.Instance == null)

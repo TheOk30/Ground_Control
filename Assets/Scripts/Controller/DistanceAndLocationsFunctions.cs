@@ -117,8 +117,8 @@ namespace Assets
         /// <param name="arrivalLongitude"></param>
         /// <param name="distanceFromDeparture"></param>
         /// <returns></returns>
-        public static Location GetCoorWithBearingAndDistance(double departureLatitude, double departureLongitude,double arrivalLatitude, double arrivalLongitude,
-            double distanceFromDeparture)
+        public static Location GetCoorWithBearingAndDistance(double departureLatitude, double departureLongitude,
+            double arrivalLatitude, double arrivalLongitude, double distanceFromDeparture)
         {
             // Convert degrees to radians
             departureLatitude = DegreesToRadians(departureLatitude);
@@ -157,6 +157,13 @@ namespace Assets
             return temp;
         }
 
+        /// <summary>
+        /// function that returns the optimum search range based on the query location
+        /// the function is used for spatial hashing.
+        /// Time complexity: O(1)
+        /// </summary>
+        /// <param name="queryLocation"></param>
+        /// <returns></returns>
         public static Location OptimumSearchRange(Location queryLocation)
         {
             // Calculate the equivalent latitude and longitude degrees for the search radius (e.g., 10 kilometers)

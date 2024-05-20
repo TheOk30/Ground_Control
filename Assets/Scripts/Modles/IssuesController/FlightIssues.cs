@@ -35,26 +35,46 @@ namespace Assets
             this.grade = grade;
         }
 
+        /// <summary>
+        /// Get the Id of the issue
+        /// </summary>
+        /// <returns></returns>
         public int GetId()
         {
             return id;
         }
 
+        /// <summary>
+        /// Get the code of the issue
+        /// </summary>
+        /// <returns></returns>
         public string GetCode()
         {
             return code;
         }
 
+        /// <summary>
+        /// Get the name of the issue
+        /// </summary>
+        /// <returns></returns>
         public string GetName()
         {
             return name;
         }
 
+        /// <summary>
+        /// Get the description of the issue
+        /// </summary>
+        /// <returns></returns>
         public string GetDescription()
         {
             return description;
         }
 
+        /// <summary>
+        /// Get the grade of the issue
+        /// </summary>
+        /// <returns></returns>
         public int GetGrade()
         {
             return grade;

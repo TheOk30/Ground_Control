@@ -18,6 +18,10 @@ public class InputMainAirportInfo : MonoBehaviour
         errorText.text = "";
     }
 
+    /// <summary>
+    /// Function that gets called when the "ENTER"
+    /// button has been clicked
+    /// </summary>
     public void OnSubmit()
     {
         Regex airportCodePattern = new Regex(@"\b[A-Z]{3}\b");
@@ -28,7 +32,7 @@ public class InputMainAirportInfo : MonoBehaviour
 
         if (!ValidateInput(airportCodeInput.text, airportCodePattern))
         {
-            errorText.text = "Airport code must be 3 characters long";
+            errorText.text = "Airport code must be 3 capital characters long";
             Debug.Log("Airport code must be 3 characters long");
 
             return;
@@ -37,7 +41,7 @@ public class InputMainAirportInfo : MonoBehaviour
         if (!ValidateInput(numRunwayInput.text, runwayNumberPattern))
         {
             errorText.text = "Number of runways must be an integer";
-            Debug.Log("Number of runways must be an integer");
+            Debug.Log("Number of runways must be an integer between  1- 5");
 
             return;
         }
@@ -45,7 +49,7 @@ public class InputMainAirportInfo : MonoBehaviour
         if (!ValidateInput(flightIntervalsInput.text, flightIntervalPattern))
         {
             errorText.text = "Flight intervals must be an integer";
-            Debug.Log("Flight intervals must be an integer");
+            Debug.Log("Flight intervals must be an integer between 5 -720");
             return;
         }
 

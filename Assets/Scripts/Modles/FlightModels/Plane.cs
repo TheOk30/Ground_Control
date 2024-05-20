@@ -44,11 +44,21 @@ namespace Assets
             this.grade = grade;
         }
 
+        /// <summary>
+        /// Create the Plane ID
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         private string CreatePlaneID(int index)
         {
             return this.DBplaneID.ToString() + this.airline.GetAirlineCode().ToString() + '_' + index.ToString();
         }
         
+        /// <summary>
+        /// Bind the plane to the airline
+        /// </summary>
+        /// <param name="airline"></param>
+        /// <param name="index"></param>
         public void BindAirlineToCurrentPlane(Airline airline, int index)
         {
             if (this.airline != null)
@@ -58,6 +68,12 @@ namespace Assets
             }
         }
 
+        /// <summary>
+        /// Calculate the max speed increase possible
+        /// used to calculate the max speed possible to increase for a flight with an issue
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         public int CalculateMaxSpeedIncrease(DateTime currentTime)
         {
             int minFuelPossible = (int)(this.fuelDropRate * SimulationController.minFuelPercentageAllowedAtLanding);
@@ -82,52 +98,94 @@ namespace Assets
             return Math.Min(newSpeed, this.maxSpeed);
         }
 
+        /// <summary>
+        /// Get the plane Id
+        /// </summary>
+        /// <returns></returns>
         public int GetPlaneID()
         {
             return this.DBplaneID;
         }
 
+        /// <summary>
+        /// Get the average speed of the flight
+        /// </summary>
+        /// <returns></returns>
         public int GetAvrSpeed()
         {
             return this.avrSpeed;
         }
 
+        /// <summary>
+        /// Get the current speed of the flight
+        /// </summary>
+        /// <returns></returns>
         public int GetCurrentSpeed()
         {
             return this.currentSpeed;
         }
 
+        /// <summary>
+        /// Get the grade of the plane 
+        /// equivillant to the airport runway grade
+        /// </summary>
+        /// <returns></returns>
         public int GetGrade()
         {
             return this.grade;
         }
 
+        /// <summary>
+        /// Get the fuel drop rate
+        /// </summary>
+        /// <returns></returns>
         public int GetFuelDropRate()
         {  
             return this.fuelDropRate; 
         }   
 
+        /// <summary>
+        /// Get the current fuel level
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         public int GetCurrentFuelLevel(DateTime currentTime)
         {
             this.currentFuelLevel = this.fuelCapacity - (this.GetFuelDropRate() * this.flight.GetTimeTraveledMin(currentTime))/60;
             return this.currentFuelLevel;
         }
 
+        /// <summary>
+        /// Set a new Fuel level
+        /// </summary>
+        /// <param name="fuelLevel"></param>
         public void SetNewCurrentFuelLevel(int fuelLevel)
         {
             this.currentFuelLevel = fuelLevel;
         }
 
+        /// <summary>
+        /// Set new Fuel Drop Rate
+        /// </summary>
+        /// <param name="fuelDropRate"></param>
         public void SetNewFuelDropRate(int fuelDropRate)
         {
             this.fuelDropRate = fuelDropRate;
         }
 
+        /// <summary>
+        /// Set the current speed of the flight
+        /// </summary>
+        /// <param name="AvrSpeed"></param>
         public void SetCurrentSpeed(int AvrSpeed)
         {
             this.currentSpeed = AvrSpeed;
         }
 
+        /// <summary>
+        /// set the flight that the plane is currently on
+        /// </summary>
+        /// <param name="flight"></param>
         public void SetFlight(Flight flight)
         {
             if ( flight != null )
@@ -136,12 +194,21 @@ namespace Assets
             }
         }
 
+        /// <summary>
+        /// Calculate the maximum flight the plane can travel
+        /// </summary>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         public int GetMaxDistanceAvailable(DateTime currentTime)
         {
             double distance = ((double)GetCurrentFuelLevel(currentTime) / this.fuelDropRate) * this.currentSpeed;
             return (int)distance;
         }
 
+        /// <summary>
+        /// to string
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return this.planeName;

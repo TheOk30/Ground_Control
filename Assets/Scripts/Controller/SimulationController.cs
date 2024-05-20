@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor.PackageManager;
 
 namespace Assets.Scripts.Controller
 {
@@ -20,7 +20,7 @@ namespace Assets.Scripts.Controller
         public const int First_LastProblemTimePossible = 20;
 
         //Time speeder for the simulation
-        public const int TimeSpeeder = 7000;
+        public const int TimeSpeeder = 3000;
 
         //Interval between flights for the flight schedule creator
         public const int TimeBetweenFlightsOnSchedule = 5;
@@ -87,5 +87,16 @@ namespace Assets.Scripts.Controller
 
         //Max distance to look for an alternative landing location
         public static int MaxRadiusDistance = 1000;
+
+        //Dictionary for max radius from originial airport to start looking for an alternative landing location
+        public static Dictionary<int, int> Weather = new Dictionary<int, int>
+        {
+            { 0, 0 }, // none
+            { 1, 1 }, // rain
+            { 2, 1 }, // snow
+            { 3, 2 } // fog
+        };
+
+        public static bool chanceOfWeather = (rnd.Next(0, 100) % 7) == 0;
     }
 }
